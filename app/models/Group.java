@@ -3,11 +3,13 @@ package models;
 import java.util.*;
 import javax.persistence.*;
 
+import com.avaje.ebean.Ebean;
 import play.db.ebean.*;
 import play.data.format.*;
 import play.data.validation.*;
 
 @Entity
+@Table(name = "Grupo")
 public class Group extends Model {
 
     @Id
@@ -16,19 +18,11 @@ public class Group extends Model {
     @Constraints.Required
     public String name;
 
-    public Integer getGid() {
-        return gid;
-    }
-
-    public void setGid(Integer gid) {
-        this.gid = gid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public Group(String name) {
         this.name = name;
     }
+
+    public static Finder<Long,Group> find = new Finder<Long,Group>(
+            Long.class, Group.class
+    );
 }
