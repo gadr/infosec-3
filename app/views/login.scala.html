@@ -4,11 +4,33 @@
         <div class="span12">
             <h4>Ultra-SAFE ™ ® Two Factor Authentication</h4>
 
-            <form action="/auth" method="POST" class="form-horizontal">
-                <input type="text" placeholder="Username" name="username"/>
-                <input type="password" placeholder="Password" name="password"/>
+            <form action="/login" method="POST" class="">
+                <div class="control-group">
+                    <input type="text" placeholder="Username" name="username"/>
+                </div>
                 <input type="submit" value="Login"/>
             </form>
+
+            <form action="/password" method="POST" class="">
+                <div class="control-group">
+                    <input type="text" placeholder="Phoneme 1" name="phonemes">
+                </div>
+                <div class="control-group">
+                    <input type="text" placeholder="Phoneme 2" name="phonemes">
+                </div>
+                <div class="control-group">
+                    <input type="text" placeholder="Phoneme 3" name="phonemes">
+                </div>
+                <input type="submit" value="Check Password"/>
+            </form>
+
+            <form action="/signature" method="POST" class="">
+                <div class="control-group">
+                <input type="text" placeholder="Digital Signature" name="signature"/>
+                </div>
+                <input type="submit" value="Check Digital Signature"/>
+            </form>
+
         </div>
     </div>
 
