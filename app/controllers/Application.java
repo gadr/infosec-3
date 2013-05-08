@@ -29,7 +29,7 @@ public class Application extends Controller {
         String username = request().body().asFormUrlEncoded().get("username")[0];
         if ("teste".equals(username)) {
             session("connected", username);
-            return ok("HELLO");
+            return redirect("/");
         }
         else {
             return unauthorized("ERROR");
