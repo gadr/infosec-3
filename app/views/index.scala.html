@@ -1,7 +1,12 @@
-@(message: String)
+@(username: String)
 
-@main("Welcome to Play 2.1") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@main {
+
+    <div class="row-fluid marketing">
+        <div class="span12">
+            <h4>Hello, @username</h4>
+            <span><a href="/logout">Logout</a></span>
+        </div>
+    </div>
+
 }

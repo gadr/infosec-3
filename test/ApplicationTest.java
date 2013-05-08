@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.User;
 import org.codehaus.jackson.JsonNode;
 import org.junit.*;
 
@@ -39,6 +40,10 @@ public class ApplicationTest {
         assertThat(contentType(html)).isEqualTo("text/html");
         assertThat(contentAsString(html)).contains("Your new application is ready.");
     }
-  
+
+    @Test
+    public void userExists() {
+        User user = new User();
+    }
    
 }

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="classes_managed">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/target/scala-2.10/classes_managed" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
