@@ -2,10 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import applet.PrivateKeyChecker;
 import controllers.routes;
@@ -43,7 +40,9 @@ public class DigitalSignatureTest {
             BadPaddingException, IllegalBlockSizeException, IOException, InvalidKeySpecException, SignatureException {
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
         String path = "test/gadr.priv";
-        String password = "lala";
+        String password = "superfrasemuitogrande";
+        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+
         Result generateRandomBytes = callAction(routes.ref.Application.generateRandom512Bytes());
         byte[] randomBytes = contentAsString(generateRandomBytes).getBytes();
         assertThat(randomBytes.length > 0);
@@ -56,7 +55,7 @@ public class DigitalSignatureTest {
         byte[] encodedprivkey = keyPair.getPrivate().getEncoded();
 
 
-        SecretKeySpec keySpec = new SecretKeySpec(password.getBytes(), "DES");
+        SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
         System.out.println("Finish generating DES key");
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
         System.out.println("Start encryption");
