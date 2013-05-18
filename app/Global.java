@@ -1,6 +1,7 @@
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import models.Group;
+import models.User;
 import play.*;
 import play.db.ebean.Transactional;
 
@@ -11,22 +12,23 @@ public class Global extends GlobalSettings {
     @Override
     @Transactional
     public void onStart(Application app) {
-        Logger.info("Application has started");
+        Group administrador = new Group();
+        administrador.setName("Administrador");
+        administrador.save();
 
-        Group grupo1 = new Group("Administrador");
-        grupo1.save();
-
-        Group grupo2 = new Group("Usuário");
-        grupo2.save();
-
-        List<Group> groups = Group.find.all();
-
-        Logger.info(""+groups.size());
+        User user = new User();
+        user.setUsername("teste");
+        user.setPassword("123");
+        user.setGroup(administrador);
+        user.save();
     }
 
     @Override
     public void onStop(Application app) {
-        Logger.info("Application shutdown...");
+        Group grupo = Group.findByName("Administrador");
+        User result = User.findUser("teste", "123");
+        result.delete();
+        grupo.delete();
     }
 
 }

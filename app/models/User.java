@@ -1,5 +1,73 @@
 package models;
 
-public class User {
+import javax.persistence.*;
+
+import play.db.ebean.*;
+import play.data.validation.*;
+
+@Entity
+@Table(name = "Usario")
+public class User extends Model{
+
+	@Id
+    Long gid;
+
+    @Constraints.Required
+    String username;
+
+    @Constraints.Required
+    String password;
+
+    @OneToOne
+    Group group;
+
+    Integer accessNumber = 0;
+
+    public Long getGid() {
+        return gid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Integer getAccessNumber() {
+        return accessNumber;
+    }
+
+    public void addAccessNumber() {
+        this.accessNumber++;
+    }
+
+    public static Finder<Long, User> find = new Finder<Long, User>(Long.class, User.class);
+
+    public static User findUser(String username, String password) {
+        return find.where().eq("username", username).eq("password", password).findUnique();
+    }
+
+    public static User find(String gid) {
+        Long newGid = Long.parseLong(gid);
+        return find.where().idEq(newGid).findUnique();
+    }
 
 }

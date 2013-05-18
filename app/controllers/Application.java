@@ -1,5 +1,6 @@
 package controllers;
 
+import models.User;
 import play.*;
 import play.mvc.*;
 
@@ -11,8 +12,9 @@ import java.util.Collections;
 public class Application extends Controller {
   
     public static Result index() {
-        String user = session("connected");
-        if(user != null) {
+        String userGid = session("connected");
+        if(userGid != null) {
+            User user = User.find(userGid);
             return ok(index.render(user));
         } else {
             return redirect("/login");
@@ -30,13 +32,17 @@ public class Application extends Controller {
 
     public static Result checkLogin() {
         String username = request().body().asFormUrlEncoded().get("username")[0];
-        System.out.println(username);
-        if ("existente".equals(username)) {
-            session("connected", username);
+        User result = User.findUser(username, "123");
+        if (result != null) {
+            /*
+            if (result.isBlocked()) {
+                return forbidden("BLOCKED");
+            }
+            */
+            result.addAccessNumber();
+            result.save();
+            session("connected", result.getGid().toString());
             return ok("EXISTS");
-        }
-        else if ("bloqueado".equals(username)) {
-            return forbidden("BLOCKED");
         }
         else {
             return notFound("UNKNOWN");

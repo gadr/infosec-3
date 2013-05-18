@@ -1,10 +1,12 @@
-@(username: String)
+@(user: User)
 
 @main {
 
-    <div class="row-fluid marketing">
+    <div class="row-fluid top-header">
         <div class="span12">
-            <h4>Hello, @username</h4>
+            <h4>Olá, @user.getUsername()</h4>
+            <p>Grupo: @user.getGroup().getName()</p>
+            <p></p>
             <span><a href="/logout">Logout</a></span>
         </div>
     </div>
