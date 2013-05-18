@@ -8,6 +8,7 @@ import views.html.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 
 public class Application extends Controller {
   
@@ -53,6 +54,12 @@ public class Application extends Controller {
         String[] phonemes = request().body().asFormUrlEncoded().get("phonemes");
         System.out.println("Phonemes: " + Arrays.toString(phonemes));
         return ok("CHECK");
+    }
+
+    public static Result generateRandom512Bytes() {
+        byte[] b = new byte[20];
+        new Random().nextBytes(b);
+        return ok(b);
     }
 
     public static Result checkDigitalSignature() {
