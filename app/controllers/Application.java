@@ -57,7 +57,7 @@ public class Application extends Controller {
     }
 
     public static Result generateRandom512Bytes() {
-        byte[] b = new byte[20];
+        byte[] b = new byte[512];
         new Random().nextBytes(b);
         return ok(b);
     }
