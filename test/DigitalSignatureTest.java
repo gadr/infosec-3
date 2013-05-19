@@ -83,7 +83,7 @@ public class DigitalSignatureTest extends BaseModelTest {
         PublicKey publicKey = digitalSignatureChecker.readPublicKey(FileUtils.readFileToByteArray(new File(publicKeyPath)));
 
         // Check the signature with the public key
-        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes);;
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes, randomBytes);
         assertThat(isVerified);
     }
 

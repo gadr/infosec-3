@@ -17,7 +17,9 @@ create table Usario (
   group_gid                 bigint,
   access_number             integer,
   blocked                   boolean,
+  tries                     integer,
   blocked_since             timestamp,
+  public_key                varbinary(255),
   constraint pk_Usario primary key (gid))
 ;
 

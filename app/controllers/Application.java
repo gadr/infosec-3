@@ -69,14 +69,13 @@ public class Application extends Controller {
         return ok(b);
     }
 
-    public static Result checkDigitalSignature() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, SignatureException, InvalidKeyException {
-        String signature = request().body().asFormUrlEncoded().get("signature")[0];
+    public static Result checkDigitalSignature(String signature) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         byte[] randomBytes = session("randomBytes").getBytes();
         String username = session("connected");
         User loggedInUser = User.findByUsername(username);
         DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
         PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
-        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, randomBytes);
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signature.getBytes(), randomBytes);
         System.out.println(signature);
         return isVerified ? ok("CHECK") : unauthorized("WRONG_SIGNATURE");
     }
