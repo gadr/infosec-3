@@ -86,5 +86,13 @@ public class DigitalSignatureTest {
         boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes);;
         assertThat(isVerified);
     }
-   
+
+    @Test
+    public void checkByteToStringConversion() {
+        byte[] b = new byte[512];
+        new Random().nextBytes(b);
+        String s = new String(b);
+        byte[] convertedBytes = s.getBytes();
+        assertThat(Arrays.equals(b, convertedBytes));
+    }
 }
