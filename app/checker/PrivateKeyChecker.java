@@ -1,4 +1,4 @@
-package applet;
+package checker;
 
 
 import org.apache.commons.io.FileUtils;

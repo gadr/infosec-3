@@ -5,7 +5,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 
-import applet.PrivateKeyChecker;
+import checker.DigitalSignatureChecker;
+import checker.PrivateKeyChecker;
 import controllers.routes;
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
@@ -20,11 +21,9 @@ import static org.fest.assertions.Assertions.*;
 
 public class DigitalSignatureTest {
 
-    @Test
-    public void checkDigitalSignature() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-            BadPaddingException, IllegalBlockSizeException, IOException, InvalidKeySpecException, SignatureException {
-        // The Private Key Chair used by our applet
-        PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
+    @Before
+    public void createKeys() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException, IOException {
         // Path to the private key
         String privateKeyPath = "test/gadr.priv";
         String publicKeyPath = "test/gadr.pub";
@@ -32,13 +31,7 @@ public class DigitalSignatureTest {
         byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
         assertThat(password64Bits.length == 8);
 
-        // Generate random bytes. Will be used for the Digital Signature
-        Result generateRandomBytes = callAction(routes.ref.Application.generateRandom512Bytes());
-        byte[] randomBytes = contentAsString(generateRandomBytes).getBytes();
-        assertThat(randomBytes.length == 512);
-
         // Generate key pair
-        System.out.println("Start generating key pair");
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(1024);
         KeyPair keyPair = keyPairGenerator.genKeyPair();
@@ -59,26 +52,39 @@ public class DigitalSignatureTest {
 
         assertThat(new File(privateKeyPath).exists());
         assertThat(new File(publicKeyPath).exists());
+    }
+
+    @Test
+    public void checkDigitalSignature() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException, IOException, InvalidKeySpecException, SignatureException {
+        // The Private Key Chair used by our applet
+        PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
+        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+        // Path to the private key
+        String privateKeyPath = "test/gadr.priv";
+        String publicKeyPath = "test/gadr.pub";
+        String password = "superfrasemuitogrande";
+        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+        assertThat(password64Bits.length == 8);
+
+        // Generate random bytes. Will be used for the Digital Signature
+        Result generateRandomBytes = callAction(routes.ref.Application.generateRandom512Bytes());
+        byte[] randomBytes = contentAsString(generateRandomBytes).getBytes();
+        assertThat(randomBytes.length == 512);
 
         // Use the private key checker to decrypt the pkcs5 key into a encoded pkcs8 key
         PrivateKey decryptedKey = privateKeyChecker.decryptPrivateKey(privateKeyPath, password);
-        assertThat(Arrays.equals(decryptedKey.getEncoded(), encodedPrivateKey));
 
         // Sign the random bytes with the key
         byte[] signatureBytes = privateKeyChecker.sign(decryptedKey, randomBytes);
         assertThat(signatureBytes.length > 0);
 
         // Get the public key from File System
-        byte[] publicKeyBytes = FileUtils.readFileToByteArray(new File(publicKeyPath));
-        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyPath);
 
         // Check the signature with the public key
-        Signature signature = Signature.getInstance("MD5withRSA");
-        signature.initVerify(publicKey);
-        signature.update(signatureBytes);
-        assertThat(signature.verify(signatureBytes));
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes);;
+        assertThat(isVerified);
     }
    
 }
