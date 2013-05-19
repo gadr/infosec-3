@@ -33,6 +33,8 @@ public class User extends Model{
 
     Date blockedSince;
 
+    private byte[] publicKey;
+
     public Long getGid() {
         return gid;
     }
@@ -111,5 +113,13 @@ public class User extends Model{
 
     public static User authenticate(String username, String password) {
         return find.where().eq("username", username).eq("password", password).findUnique();
+    }
+
+    public byte[] getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(byte[] publicKey) {
+        this.publicKey = publicKey;
     }
 }
