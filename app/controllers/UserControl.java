@@ -12,21 +12,16 @@ public class UserControl extends Controller {
 
     public static Result newUser() {
         Form<models.User> userForm = Form.form(User.class);
-        try {
-            User user = getUser();
-            return ok(userform.render(user,userForm));
-        } catch (Exception e) {
-            return notFound("UNKNOWN");
-        }
+        User user = getUser();
+        return ok(userform.render(user,userForm));
     }
 
     public static Result submit() {
         return ok();
     }
 
-    public static User getUser() throws Exception {
+    public static User getUser() {
         String username = session("connected");
-        if(username == null) throw new Exception("Nenhum usuario logado");
         return User.findByUsername(username);
     }
 

@@ -13,9 +13,8 @@ import java.util.Random;
 public class Application extends Controller {
   
     public static Result index() {
-        String username = session("connected");
-        if(username != null) {
-            User user = User.findByUsername(username);
+        User user = UserControl.getUser();
+        if(user != null) {
             return ok(menu.render(user));
         } else {
             return redirect("/login");
