@@ -7,6 +7,12 @@ import play.mvc.*;
 
 import views.html.*;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -63,15 +69,16 @@ public class Application extends Controller {
         return ok(b);
     }
 
-    public static Result checkDigitalSignature() {
+    public static Result checkDigitalSignature() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         String signature = request().body().asFormUrlEncoded().get("signature")[0];
         byte[] randomBytes = session("randomBytes").getBytes();
         String username = session("connected");
-        //User loggedInUser = User.findByUsername(username);
+        User loggedInUser = User.findByUsername(username);
         DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        //digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, randomBytes);
         System.out.println(signature);
-        return ok("CHECK");
+        return isVerified ? ok("CHECK") : unauthorized("WRONG_SIGNATURE");
     }
 
 }
