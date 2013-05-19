@@ -1,0 +1,16 @@
+@(currentUser: User, myForm: Form[User])
+@import helper.twitterBootstrap._
+
+@user(currentUser) {
+
+    @helper.form(action = routes.UserControl.submit()) {
+
+        @helper.inputText(myForm("username"))
+
+        @helper.inputPassword(myForm("password"))
+    }
+
+    <a href="/">Voltar</a>
+}
+
+

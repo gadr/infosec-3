@@ -12,9 +12,12 @@ create table Grupo (
 create table Usario (
   gid                       bigint not null,
   username                  varchar(255),
+  name                      varchar(255),
   password                  varchar(255),
   group_gid                 bigint,
   access_number             integer,
+  blocked                   boolean,
+  blocked_since             timestamp,
   constraint pk_Usario primary key (gid))
 ;
 

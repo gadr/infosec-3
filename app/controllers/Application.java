@@ -14,10 +14,9 @@ import java.util.Random;
 public class Application extends Controller {
   
     public static Result index() {
-        String userGid = session("connected");
-        if(userGid != null) {
-            User user = User.find(userGid);
-            return ok(index.render(user));
+        User user = UserControl.getUser();
+        if(user != null) {
+            return ok(menu.render(user));
         } else {
             return redirect("/login");
         }
@@ -34,7 +33,7 @@ public class Application extends Controller {
 
     public static Result checkLogin() {
         String username = request().body().asFormUrlEncoded().get("username")[0];
-        User result = User.findUser(username, "123");
+        User result = User.authenticate(username, "123");
         if (result != null) {
             /*
             if (result.isBlocked()) {
@@ -43,8 +42,8 @@ public class Application extends Controller {
             */
             result.addAccessNumber();
             result.save();
-            session("connected", result.getGid().toString());
-            return ok("EXISTS");
+            session("connected", result.getUsername());
+            return redirect("/");
         }
         else {
             return notFound("UNKNOWN");
