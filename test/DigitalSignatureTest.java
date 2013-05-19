@@ -19,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import static play.test.Helpers.*;
 import static org.fest.assertions.Assertions.*;
 
-public class DigitalSignatureTest {
+public class DigitalSignatureTest extends BaseModelTest {
 
     @Before
     public void createKeys() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
@@ -80,7 +80,7 @@ public class DigitalSignatureTest {
         assertThat(signatureBytes.length > 0);
 
         // Get the public key from File System
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyPath);
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(FileUtils.readFileToByteArray(new File(publicKeyPath)));
 
         // Check the signature with the public key
         boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes);;

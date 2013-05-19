@@ -1,5 +1,6 @@
 package controllers;
 
+import checker.DigitalSignatureChecker;
 import models.User;
 import play.*;
 import play.mvc.*;
@@ -59,15 +60,19 @@ public class Application extends Controller {
     public static Result generateRandom512Bytes() {
         byte[] b = new byte[512];
         new Random().nextBytes(b);
-        //session("randomBytes", new String(b));
+        session("randomBytes", new String(b));
         return ok(b);
     }
 
     public static Result checkDigitalSignature() {
         String signature = request().body().asFormUrlEncoded().get("signature")[0];
         byte[] randomBytes = session("randomBytes").getBytes();
+        String username = session("connected");
+        //User loggedInUser = User.findByUsername(username);
+        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+        //digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
         System.out.println(signature);
         return ok("CHECK");
     }
-  
+
 }
