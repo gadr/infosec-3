@@ -1,4 +1,4 @@
-@(currentUser: User)(menu: Html)
+@(currentUser: User)(userform: Html)
 
 @main {
 
@@ -12,6 +12,6 @@
         <p>Total de acessos do usuário: @currentUser.getAccessNumber()</p>
     </div>
 
-   @menu
+    @userform
 
 }

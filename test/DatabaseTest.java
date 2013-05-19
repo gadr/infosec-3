@@ -69,7 +69,7 @@ public class DatabaseTest extends BaseModelTest{
         user.setUsername(username);
         user.setPassword(password);
         user.save();
-        User result = User.findUser(username, password);
+        User result = User.authenticate(username, password);
 
         // Assert
         assertThat(result).isNotNull();
