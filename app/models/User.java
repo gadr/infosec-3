@@ -29,6 +29,8 @@ public class User extends Model{
 
     Boolean blocked = Boolean.FALSE;
 
+    Integer tries = 0;
+
     Date blockedSince;
 
     public Long getGid() {
@@ -41,6 +43,14 @@ public class User extends Model{
 
     public Boolean getBlocked() {
         return blocked;
+    }
+
+    public Integer getTries() {
+        return tries;
+    }
+
+    public void addTry() {
+        tries++;
     }
 
     public void setBlocked(Boolean blocked) {

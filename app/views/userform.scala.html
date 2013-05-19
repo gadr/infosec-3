@@ -5,9 +5,9 @@
 
     @helper.form(action = routes.UserControl.submit()) {
 
-        @helper.inputText(myForm("username"))
+        @helper.inputText(myForm("username"), '_label -> "Login:", '_showConstraints -> false)
 
-        @helper.inputPassword(myForm("password"))
+        @helper.inputPassword(myForm("username"), '_label -> "Senha:", '_showConstraints -> false)
     }
 
     <a href="/">Voltar</a>
