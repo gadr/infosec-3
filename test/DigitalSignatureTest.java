@@ -2,26 +2,16 @@ import java.io.File;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.*;
 
-import applet.PrivateKeyChecker;
+import checker.DigitalSignatureChecker;
+import checker.PrivateKeyChecker;
 import controllers.routes;
-import models.User;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.*;
 
 import play.mvc.*;
-import play.test.*;
-import play.data.DynamicForm;
-import play.data.validation.ValidationError;
-import play.data.validation.Constraints.RequiredValidator;
-import play.i18n.Lang;
-import play.libs.F;
-import play.libs.F.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,50 +19,80 @@ import javax.crypto.spec.SecretKeySpec;
 import static play.test.Helpers.*;
 import static org.fest.assertions.Assertions.*;
 
-
-/**
-*
-* Simple (JUnit) tests that can call all parts of a play app.
-* If you are interested in mocking a whole application, see the wiki for more details.
-*
-*/
 public class DigitalSignatureTest {
+
+    @Before
+    public void createKeys() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException, IOException {
+        // Path to the private key
+        String privateKeyPath = "test/gadr.priv";
+        String publicKeyPath = "test/gadr.pub";
+        String password = "superfrasemuitogrande";
+        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+        assertThat(password64Bits.length == 8);
+
+        // Generate key pair
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        KeyPair keyPair = keyPairGenerator.genKeyPair();
+        // Extract the encoded private key, this is an unencrypted PKCS#8 private key
+        byte[] encodedPrivateKey = keyPair.getPrivate().getEncoded();
+        // Extract the encoded public key
+        byte[] encodedPublicKey = keyPair.getPublic().getEncoded();
+
+        // Encodes private key with PKCS5 using the password
+        SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
+        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        byte[] pkcs5EncryptedKey = cipher.doFinal(encodedPrivateKey);
+
+        // Write both keys to the file system
+        FileUtils.writeByteArrayToFile(new File(privateKeyPath), pkcs5EncryptedKey);
+        FileUtils.writeByteArrayToFile(new File(publicKeyPath), encodedPublicKey);
+
+        assertThat(new File(privateKeyPath).exists());
+        assertThat(new File(publicKeyPath).exists());
+    }
 
     @Test
     public void checkDigitalSignature() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException, IOException, InvalidKeySpecException, SignatureException {
+        // The Private Key Chair used by our applet
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
-        String path = "test/gadr.priv";
-        String password = "lala";
+        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+        // Path to the private key
+        String privateKeyPath = "test/gadr.priv";
+        String publicKeyPath = "test/gadr.pub";
+        String password = "superfrasemuitogrande";
+        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+        assertThat(password64Bits.length == 8);
+
+        // Generate random bytes. Will be used for the Digital Signature
         Result generateRandomBytes = callAction(routes.ref.Application.generateRandom512Bytes());
         byte[] randomBytes = contentAsString(generateRandomBytes).getBytes();
-        assertThat(randomBytes.length > 0);
+        assertThat(randomBytes.length == 512);
 
-        System.out.println("Start generating Private key");
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024);
-        KeyPair keyPair = keyPairGenerator.genKeyPair();
-        // extract the encoded private key, this is an unencrypted PKCS#8 private key
-        byte[] encodedprivkey = keyPair.getPrivate().getEncoded();
+        // Use the private key checker to decrypt the pkcs5 key into a encoded pkcs8 key
+        PrivateKey decryptedKey = privateKeyChecker.decryptPrivateKey(privateKeyPath, password);
 
-
-        SecretKeySpec keySpec = new SecretKeySpec(password.getBytes(), "DES");
-        System.out.println("Finish generating DES key");
-        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        System.out.println("Start encryption");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] pkcs5EncryptedKey = cipher.doFinal(encodedprivkey);
-
-        FileUtils.writeByteArrayToFile(new File(path), pkcs5EncryptedKey);
-
-        PrivateKey decryptedKey = privateKeyChecker.decryptPrivateKey(path, password);
-
+        // Sign the random bytes with the key
         byte[] signatureBytes = privateKeyChecker.sign(decryptedKey, randomBytes);
+        assertThat(signatureBytes.length > 0);
 
-        Signature signature = Signature.getInstance("MD5withRSA");
-        signature.initVerify(keyPair.getPublic());
-        signature.update(signatureBytes);
-        assertThat(signature.verify(signatureBytes));
+        // Get the public key from File System
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyPath);
+
+        // Check the signature with the public key
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes);;
+        assertThat(isVerified);
     }
-   
+
+    @Test
+    public void checkByteToStringConversion() {
+        byte[] b = new byte[512];
+        new Random().nextBytes(b);
+        String s = new String(b);
+        byte[] convertedBytes = s.getBytes();
+        assertThat(Arrays.equals(b, convertedBytes));
+    }
 }
