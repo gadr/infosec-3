@@ -13,4 +13,9 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-/test/random*
+test/random*
+test/admin.priv
+test/admin.pub
+test/gadr.priv
+test/gadr.pub
+assets/.idea/
