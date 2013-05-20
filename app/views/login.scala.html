@@ -4,14 +4,34 @@
         <div class="span12">
             <h4>Ultra-SAFE ™ ® Two Factor Authentication</h4>
 
-            <form action="/login" method="POST" class="">
+            <div class="alert alert-error username hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Invalid username!</strong> Your username was not found.
+            </div>
+
+            <div class="alert alert-success username hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Username valid</strong>
+            </div>
+
+            <form action="/login" method="POST" class="" id="loginForm">
                 <div class="control-group">
-                    <input type="text" placeholder="Username" name="username"/>
+                    <input type="text" placeholder="Username" name="username" id="username"/>
                 </div>
                 <input type="submit" value="Login"/>
             </form>
 
-            <form action="/password" method="POST" class="">
+            <div class="alert alert-error password hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Invalid password!</strong> Your password could not be verified.
+            </div>
+
+            <div class="alert alert-success password hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Password valid</strong>
+            </div>
+
+            <form action="/password" method="POST" class="" id="passwordForm">
                 <div class="control-group">
                     <input type="text" placeholder="Phoneme 1" name="phonemes">
                 </div>
@@ -24,15 +44,29 @@
                 <input type="submit" value="Check Password"/>
             </form>
 
-            <form action="/signature" method="POST" class="">
+            <div class="alert alert-error signature hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Invalid private key!</strong> Your digital signature could not be verified.
+            </div>
+
+            <applet code="applet.InfosecApplet"
+                    id="applet"
+                    name="InfosecApplet"
+                    archive="/assets/applet.jar"
+                    width="10"
+                    height="10" >
+            </applet>
+
+            <form action="/signature" method="POST" class="" id="checkSignature">
                 <div class="control-group">
-                <input type="text" placeholder="Digital Signature" name="signature"/>
+                <input type="file" placeholder="Private Key File" id="file"/>
+                <input type="text" placeholder="Private Key Password" id="password" value="superfrasemuitogrande"/>
                 </div>
                 <input type="submit" value="Check Digital Signature"/>
             </form>
 
         </div>
     </div>
-    <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/main.js")' type="text/javascript"></script>
 
 }

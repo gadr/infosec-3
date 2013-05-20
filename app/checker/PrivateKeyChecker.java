@@ -17,14 +17,16 @@ import java.util.Arrays;
 
 public class PrivateKeyChecker {
 
-    public PrivateKey decryptPrivateKey(String path, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        File encodedPrivateKeyFile = new File(path);
+    public PrivateKey decryptPrivateKey(byte[] encodedPrivateKey, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
         byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
-        byte[] encodedPrivateKey = FileUtils.readFileToByteArray(encodedPrivateKeyFile);
+
+        System.out.println("PrivateKey " + new String(encodedPrivateKey));
         SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
         byte[] pkcs8PrivateKey = cipher.doFinal(encodedPrivateKey);
+
+        System.out.println("PrivateKey decrypted" + new String(pkcs8PrivateKey));
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(pkcs8PrivateKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
@@ -32,8 +34,11 @@ public class PrivateKeyChecker {
 
     public byte[] sign(PrivateKey key, byte[] bytes) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
         Signature signature = Signature.getInstance("MD5WithRSA");
+        System.out.println("Signing " + new String(bytes));
         signature.initSign(key);
         signature.update(bytes);
-        return signature.sign();
+        byte[] signatureBytes = signature.sign();
+        System.out.println("Signature bytes: " + signatureBytes.length);
+        return signatureBytes;
     }
 }

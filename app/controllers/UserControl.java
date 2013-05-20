@@ -24,17 +24,16 @@ public class UserControl extends Controller {
     static Form<User> userForm = Form.form(User.class);
 
     public static Result newUser() {
-        Form<User> filledForm = userForm.bindFromRequest();
         List<Group> groups = Group.find.all();
-        User user = getUser();
-        filledForm.fill(user);
+        User user = User.findByUsername(session("connected"));
+        Form<User> filledForm = userForm.bindFromRequest();
         return ok(userform.render(user, filledForm, groups));
     }
 
     public static Result submit() {
         Form<User> filledForm = userForm.bindFromRequest();
         List<Group> groups = Group.find.all();
-        User user = getUser();
+        User user = User.findByUsername(session("connected"));
         boolean hasErrors = filledForm.hasErrors();
         if(hasErrors) {
             for(String key : filledForm.errors().keySet()){
@@ -78,11 +77,6 @@ public class UserControl extends Controller {
             filledUser.save();
             return redirect("/new");
         }
-    }
-
-    public static User getUser() {
-        String username = session("connected");
-        return User.findByUsername(username);
     }
 
 }

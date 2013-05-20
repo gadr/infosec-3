@@ -2,12 +2,15 @@ package controllers;
 
 import checker.DigitalSignatureChecker;
 import models.User;
+import org.apache.commons.io.FileUtils;
 import play.*;
 import play.mvc.*;
 
 import views.html.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -20,8 +23,10 @@ import java.util.Random;
 public class Application extends Controller {
   
     public static Result index() {
-        User user = UserControl.getUser();
-        if(user != null) {
+        User user = User.findByUsername(session("connected"));
+        boolean passwordChecked = "OK".equals(session("password"));
+        boolean signatureChecked = "OK".equals(session("signature"));
+        if(user != null && passwordChecked && signatureChecked) {
             return ok(menu.render(user));
         } else {
             return redirect("/login");
@@ -49,7 +54,7 @@ public class Application extends Controller {
             result.addAccessNumber();
             result.save();
             session("connected", result.getUsername());
-            return redirect("/");
+            return ok();
         }
         else {
             return notFound("UNKNOWN");
@@ -59,26 +64,36 @@ public class Application extends Controller {
     public static Result checkPassword() {
         String[] phonemes = request().body().asFormUrlEncoded().get("phonemes");
         System.out.println("Phonemes: " + Arrays.toString(phonemes));
-        return ok("CHECK");
+        session("password", "OK");
+        return ok("OK");
     }
 
-    public static Result generateRandom512Bytes() {
+    public static Result generateRandom512Bytes() throws IOException {
         byte[] b = new byte[512];
         new Random().nextBytes(b);
-        session("randomBytes", new String(b));
+        String username = session("connected");
+        FileUtils.writeByteArrayToFile(new File("test/random-"+username), b);
         return ok(b);
     }
 
     public static Result checkDigitalSignature() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, SignatureException, InvalidKeyException {
-        String signature = request().body().asFormUrlEncoded().get("signature")[0];
-        byte[] randomBytes = session("randomBytes").getBytes();
+        byte[] signature = request().body().asRaw().asBytes();
+        System.out.println("Signature length:" + signature.length);
         String username = session("connected");
+        byte[] randomBytes = FileUtils.readFileToByteArray(new File("test/random-"+username));
         User loggedInUser = User.findByUsername(username);
         DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
-        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, randomBytes);
-        System.out.println(signature);
-        return isVerified ? ok("CHECK") : unauthorized("WRONG_SIGNATURE");
+        //PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(FileUtils.readFileToByteArray(new File("test/gadr.pub")));
+        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signature, randomBytes);
+        if (isVerified) {
+            session("signature", "OK");
+            return ok("OK");
+        }
+        else {
+            session("signature", "WRONG");
+            return unauthorized("WRONG");
+        }
     }
 
 }
