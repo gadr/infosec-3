@@ -44,7 +44,7 @@ public class Application extends Controller {
 
     public static Result checkLogin() {
         String username = request().body().asFormUrlEncoded().get("username")[0];
-        User result = User.authenticate(username, "123");
+        User result = User.findByUsername(username);
         if (result != null) {
             /*
             if (result.isBlocked()) {
@@ -83,8 +83,7 @@ public class Application extends Controller {
         byte[] randomBytes = FileUtils.readFileToByteArray(new File("test/random-"+username));
         User loggedInUser = User.findByUsername(username);
         DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        //PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(FileUtils.readFileToByteArray(new File("test/gadr.pub")));
+        PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
         boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signature, randomBytes);
         if (isVerified) {
             session("signature", "OK");

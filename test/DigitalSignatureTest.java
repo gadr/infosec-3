@@ -25,30 +25,12 @@ public class DigitalSignatureTest extends BaseModelTest {
     public void createKeys() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException, IOException {
         // Path to the private key
-        String privateKeyPath = "test/gadr.priv";
-        String publicKeyPath = "test/gadr.pub";
+        String username = "gadr";
+        String privateKeyPath = "test/" + username + ".priv";
+        String publicKeyPath = "test/" + username + ".pub";
         String password = "superfrasemuitogrande";
-        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
-        assertThat(password64Bits.length == 8);
 
-        // Generate key pair
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024);
-        KeyPair keyPair = keyPairGenerator.genKeyPair();
-        // Extract the encoded private key, this is an unencrypted PKCS#8 private key
-        byte[] encodedPrivateKey = keyPair.getPrivate().getEncoded();
-        // Extract the encoded public key
-        byte[] encodedPublicKey = keyPair.getPublic().getEncoded();
-
-        // Encodes private key with PKCS5 using the password
-        SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
-        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] pkcs5EncryptedKey = cipher.doFinal(encodedPrivateKey);
-
-        // Write both keys to the file system
-        FileUtils.writeByteArrayToFile(new File(privateKeyPath), pkcs5EncryptedKey);
-        FileUtils.writeByteArrayToFile(new File(publicKeyPath), encodedPublicKey);
+        utils.KeyPairGenerator.generateKeyPair(username, password);
 
         assertThat(new File(privateKeyPath).exists());
         assertThat(new File(publicKeyPath).exists());
