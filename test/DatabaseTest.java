@@ -53,30 +53,4 @@ public class DatabaseTest extends BaseModelTest{
         assertThat(result).isNotNull();
     }
 
-    @Test
-    public void createUser() {
-        // Arrange
-        String groupname = "Administrador";
-        String username = "breno";
-        String password = "123";
-        Group group = new Group();
-        group.setName(groupname);
-        group.save();
-
-        // Test
-        User user = new User();
-        user.setGroup(Group.findByName(groupname));
-        user.setUsername(username);
-        user.setPassword(password);
-        user.save();
-        User result = User.authenticate(username, password);
-
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getGroup()).isNotNull();
-        assertThat(result.getGroup().getName()).isEqualTo(groupname);
-    }
-
-
-
 }

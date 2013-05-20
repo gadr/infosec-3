@@ -1,16 +1,78 @@
-@(currentUser: User, myForm: Form[User])
+@(currentUser: User, myForm: Form[User], groups: List[Group])
 @import helper.twitterBootstrap._
 
 @user(currentUser) {
 
-    @helper.form(action = routes.UserControl.submit()) {
+    @helper.form(action = routes.UserControl.submit(), 'enctype -> "multipart/form-data") {
 
-        @helper.inputText(myForm("username"), '_label -> "Login:", '_showConstraints -> false)
+        @if(flash.size() > 0){
+            <div class="alert-alert error">
+                @for((key, value) <- flash){
+                <strong>Erro: </strong>@key @value<br />
+                }
+            </div>
+        }
+        @helper.inputText(
+            myForm("name"),
+            'maxlength -> 50,
+            '_label -> "Nome:",
+            '_showConstraints -> false,
+            '_showErrors -> true
+        )
 
-        @helper.inputPassword(myForm("username"), '_label -> "Senha:", '_showConstraints -> false)
+        @helper.inputText(
+            myForm("username"),
+            'maxlength -> 20,
+            '_label -> "Login:",
+            '_showConstraints -> false,
+            '_showErrors -> true
+        )
+
+
+        <div class="clearfix" id="group_field">
+            <label for="group">Grupo:</label>
+            <div class="input">
+
+                <select name="group.gid" id="group">
+                    @for(group <- groups){
+                        @if(myForm("group.gid").value() != null) {
+                            @if(myForm("group.gid").value().equals(group.getGid().toString())) {
+                                <option value="@group.getGid()" selected>@group.getName()</option>
+                            }
+                        } else {
+                            <option value="@group.getGid()">@group.getName()</option>
+                        }
+                    }
+                </select>
+
+                <span class="help-inline"></span>
+                <span class="help-block"></span>
+            </div>
+        </div>
+
+        @helper.inputPassword(
+            myForm("password"),
+            '_label -> "Senha pessoal:",
+            '_showConstraints -> true,
+            '_showErrors -> true
+        )
+
+        @helper.inputPassword(
+            myForm("passwordConfirmation"),
+            '_label -> "Confirmação da senha pessoal:",
+            '_showConstraints -> false,
+            '_showErrors -> true
+        )
+
+        @helper.inputFile(
+            myForm("publicKeyPath"),
+            'maxlength -> 255,
+            '_label -> "Caminho do arquivo com a chave pública:",
+            '_showConstraints -> false,
+            '_showErrors -> true
+        )
+
+
+        <a class="btn btn-link pull-left" href="/">Voltar</a> <input class="btn btn-primary" type="submit">
     }
-
-    <a href="/">Voltar</a>
 }
-
-

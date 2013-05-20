@@ -2,38 +2,57 @@ package models;
 
 import javax.persistence.*;
 
+import org.springframework.beans.factory.annotation.Required;
 import play.db.ebean.*;
 import play.data.validation.*;
+import play.libs.F;
+import sun.security.provider.MD5;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Random;
+
+import static play.mvc.Controller.flash;
 
 @Entity
 @Table(name = "Usario")
 public class User extends Model{
 
 	@Id
-    Long gid;
+    public Long gid;
 
     @Constraints.Required
-    String username;
-
-    String name;
+    public String username;
 
     @Constraints.Required
-    String password;
+    public String name;
+
+    @Constraints.Required
+    public String password;
+
+    @Transient
+    public String passwordConfirmation;
 
     @OneToOne
-    Group group;
+    public Group group;
 
-    Integer accessNumber = 1;
+    public String salt = "";
 
-    Boolean blocked = Boolean.FALSE;
+    public Integer accessNumber = 1;
 
-    Integer tries = 0;
+    public Boolean blocked = Boolean.FALSE;
 
-    Date blockedSince;
+    public Integer tries = 0;
 
-    private byte[] publicKey;
+    public Date blockedSince;
+
+    public String publicKeyPath;
+
+    public byte[] publicKey;
 
     public Long getGid() {
         return gid;
@@ -53,6 +72,20 @@ public class User extends Model{
 
     public void addTry() {
         tries++;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        Integer salt = random.nextInt(999999999);
+        return this.salt = salt.toString();
     }
 
     public void setBlocked(Boolean blocked) {
@@ -80,8 +113,22 @@ public class User extends Model{
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @SuppressWarnings("all")
+    public String generatePassword(String plainPassword) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        String passwordAndSalt = plainPassword + this.salt;
+
+        messageDigest.update(passwordAndSalt.getBytes());
+        byte[] password = messageDigest.digest();
+        return this.password = toHex(new String(password));
+    }
+
+    public String toHex(String arg) {
+        try {
+            return String.format("%040x", new BigInteger(1, arg.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            return String.format("%040x", new BigInteger(1, arg.getBytes()));
+        }
     }
 
     public Group getGroup() {
@@ -121,5 +168,23 @@ public class User extends Model{
 
     public void setPublicKey(byte[] publicKey) {
         this.publicKey = publicKey;
+    }
+
+    static public boolean isUsernameValid(String username) {
+        User user = findByUsername(username);
+        if (user == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean validate() {
+        boolean hasErrors = false;
+        if (!isUsernameValid(username)) {
+            flash("username", "Login "+username+" já existe.");
+            hasErrors = true;
+        }
+        return hasErrors;
     }
 }

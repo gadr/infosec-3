@@ -4,26 +4,26 @@
 # --- !Ups
 
 create table Grupo (
-  gid                       bigint not null,
+  gid                       bigint auto_increment not null,
   name                      varchar(255),
   constraint pk_Grupo primary key (gid))
 ;
 
 create table Usario (
-  gid                       bigint not null,
+  gid                       bigint auto_increment not null,
   username                  varchar(255),
   name                      varchar(255),
   password                  varchar(255),
   group_gid                 bigint,
+  salt                      varchar(255),
   access_number             integer,
-  blocked                   boolean,
-  blocked_since             timestamp,
+  blocked                   tinyint(1) default 0,
+  tries                     integer,
+  blocked_since             datetime,
+  public_key_path           varchar(255),
+  public_key                varbinary(255),
   constraint pk_Usario primary key (gid))
 ;
-
-create sequence Grupo_seq;
-
-create sequence Usario_seq;
 
 alter table Usario add constraint fk_Usario_group_1 foreign key (group_gid) references Grupo (gid) on delete restrict on update restrict;
 create index ix_Usario_group_1 on Usario (group_gid);
@@ -32,15 +32,11 @@ create index ix_Usario_group_1 on Usario (group_gid);
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+SET FOREIGN_KEY_CHECKS=0;
 
-drop table if exists Grupo;
+drop table Grupo;
 
-drop table if exists Usario;
+drop table Usario;
 
-SET REFERENTIAL_INTEGRITY TRUE;
-
-drop sequence if exists Grupo_seq;
-
-drop sequence if exists Usario_seq;
+SET FOREIGN_KEY_CHECKS=1;
 

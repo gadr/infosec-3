@@ -14,10 +14,10 @@ import play.data.validation.*;
 public class Group extends Model {
 
     @Id
-    Long gid;
+    public Long gid;
 
     @Constraints.Required
-    String name;
+    public String name;
 
     public Long getGid() {
         return gid;
