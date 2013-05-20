@@ -6,29 +6,33 @@ window.secKeyboard = new SecKeyboard()
 
 window.privateKey = ""
 
-postSignatureXHR = new XMLHttpRequest();
-postSignatureXHR.open('POST', '/signature', true);
-postSignatureXHR.onload = ->
-	if this.response is "OK" and this.status is 200
-		console.log 'success'
-		window.location.href = "/"
-	else
-		console.error 'unauthorized!'
-		$(".alert-error.signature").fadeIn()
+createPostSignatureXHR = ->
+	xhr = new XMLHttpRequest();
+	xhr.open('POST', '/signature', true);
+	xhr.onload = ->
+		if this.response is "OK" and this.status is 200
+			console.log 'success'
+			window.location.href = "/"
+		else
+			console.error 'unauthorized!'
+			$(".alert-error.signature").fadeIn()
+	xhr
 
-getRandomXHR = new XMLHttpRequest();
-getRandomXHR.open('GET', '/random', true);
-getRandomXHR.responseType = 'arraybuffer';
-getRandomXHR.onload = (e) ->
-	randomBytes = new Uint8Array(this.response)
-	console.log randomBytes
-	password = $('#password').val()
-	signature = new Uint8Array(document.InfosecApplet.sign(password, window.privateKey, randomBytes))
-	console.log "Signed:", signature
-	postSignatureXHR.send(signature);
+createRandomXHR = ->
+	xhr = new XMLHttpRequest();
+	xhr.open('GET', '/random', true);
+	xhr.responseType = 'arraybuffer';
+	xhr.onload = (e) ->
+		randomBytes = new Uint8Array(this.response)
+		console.log randomBytes
+		password = $('#password').val()
+		signature = new Uint8Array(document.InfosecApplet.sign(password, window.privateKey, randomBytes))
+		console.log "Signed:", signature
+		createPostSignatureXHR().send(signature);
+	xhr
 
 checkDigitalSignature = ->
-	getRandomXHR.send()
+	createRandomXHR().send()
 	return false
 
 changeHandler = (file) ->
