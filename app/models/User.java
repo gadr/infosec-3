@@ -19,7 +19,7 @@ import java.util.Random;
 import static play.mvc.Controller.flash;
 
 @Entity
-@Table(name = "Usario")
+@Table(name = "Usuario")
 public class User extends Model{
 
 	@Id

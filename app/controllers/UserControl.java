@@ -14,6 +14,7 @@ import views.html.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -45,13 +46,13 @@ public class UserControl extends Controller {
             return badRequest(userform.render(user, filledForm, groups));
         }
 
-        User filledUser = new User();
-        filledUser.name = filledForm.field("name").value();
-        filledUser.username = filledForm.field("username").value();
-        filledUser.password = filledForm.field("password").value();
-        filledUser.passwordConfirmation = filledForm.field("passwordConfirmation").value();
-        hasErrors = filledUser.validate();
-        if (!filledUser.password.equals(filledUser.passwordConfirmation)) {
+        User newUser = new User();
+        newUser.name = filledForm.field("name").value();
+        newUser.username = filledForm.field("username").value();
+        newUser.password = filledForm.field("password").value();
+        newUser.passwordConfirmation = filledForm.field("passwordConfirmation").value();
+        hasErrors = newUser.validate();
+        if (!newUser.password.equals(newUser.passwordConfirmation)) {
             flash("password", "A senha não confere.");
             hasErrors = true;
         }
@@ -59,11 +60,11 @@ public class UserControl extends Controller {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart publicKeyFile = body.getFile("publicKeyPath");
         if (publicKeyFile != null) {
-            user.publicKeyPath = publicKeyFile.getFilename();
+            newUser.publicKeyPath = publicKeyFile.getFilename();
             String contentType = publicKeyFile.getContentType();
             File publickKeyFile = publicKeyFile.getFile();
             try {
-                filledUser.publicKey = FileUtils.readFileToByteArray(publickKeyFile);
+                newUser.publicKey = FileUtils.readFileToByteArray(publickKeyFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -74,7 +75,13 @@ public class UserControl extends Controller {
         if(hasErrors) {
             return badRequest(userform.render(user, filledForm, groups));
         } else {
-            filledUser.save();
+            newUser.generateSalt();
+            try {
+                newUser.generatePassword(newUser.password);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            newUser.save();
             return redirect("/new");
         }
     }

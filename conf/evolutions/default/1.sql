@@ -9,7 +9,7 @@ create table Grupo (
   constraint pk_Grupo primary key (gid))
 ;
 
-create table Usario (
+create table Usuario (
   gid                       bigint auto_increment not null,
   username                  varchar(255),
   name                      varchar(255),
@@ -22,11 +22,11 @@ create table Usario (
   blocked_since             datetime,
   public_key_path           varchar(255),
   public_key                varbinary(255),
-  constraint pk_Usario primary key (gid))
+  constraint pk_Usuario primary key (gid))
 ;
 
-alter table Usario add constraint fk_Usario_group_1 foreign key (group_gid) references Grupo (gid) on delete restrict on update restrict;
-create index ix_Usario_group_1 on Usario (group_gid);
+alter table Usuario add constraint fk_Usuario_group_1 foreign key (group_gid) references Grupo (gid) on delete restrict on update restrict;
+create index ix_Usuario_group_1 on Usuario (group_gid);
 
 
 
@@ -36,7 +36,7 @@ SET FOREIGN_KEY_CHECKS=0;
 
 drop table Grupo;
 
-drop table Usario;
+drop table Usuario;
 
 SET FOREIGN_KEY_CHECKS=1;
 
