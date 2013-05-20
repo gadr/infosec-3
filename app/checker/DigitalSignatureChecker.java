@@ -15,6 +15,8 @@ public class DigitalSignatureChecker {
 
     public boolean verifySignature(PublicKey publicKey, byte[] signatureBytes, byte[] signedBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature signature = Signature.getInstance("MD5withRSA");
+        System.out.println("Signature size: " + signatureBytes.length);
+        System.out.println("signedBytes size: " + signedBytes.length);
         signature.initVerify(publicKey);
         signature.update(signedBytes);
         return signature.verify(signatureBytes);

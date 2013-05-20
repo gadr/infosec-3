@@ -12,17 +12,12 @@ public class UserControl extends Controller {
 
     public static Result newUser() {
         Form<models.User> userForm = Form.form(User.class);
-        User user = getUser();
+        User user = User.findByUsername(session("connected"));
         return ok(userform.render(user,userForm));
     }
 
     public static Result submit() {
         return ok();
-    }
-
-    public static User getUser() {
-        String username = session("connected");
-        return User.findByUsername(username);
     }
 
 }
