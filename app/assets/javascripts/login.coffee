@@ -1,6 +1,25 @@
 class SecKeyboard
 	constructor: ->
 		console.log 'Hey!'
+		@phonemes = ["BA", "CA", "DA", "FA", "GA", "JA", "BE", "BO", "CE", "CO", "DE", "DO", "FE", "FO", "GE", "GO", "JE", "JO", "MA", "ME", "RA", "RO", "VE", "VO"]
+		@buttonMap =
+			button0: []
+			button1: []
+			button2: []
+			button3: []
+			button4: []
+			button5: []
+
+	generateRandomButtons: ->
+		phonemesCopy = @phonemes[..]
+		total = 24
+		# For each button...
+		for i in [0..5]
+			# Generate 4 phonemes
+			for j in [0..3]
+				random = Math.random() * total
+				total = total - 1
+
 
 window.secKeyboard = new SecKeyboard()
 
@@ -35,7 +54,7 @@ checkDigitalSignature = ->
 	createRandomXHR().send()
 	return false
 
-changeHandler = (file) ->
+changeHandler = ->
 	console.log "File", this.files[0]
 	reader = new FileReader()
 	reader.onload = (e) ->
