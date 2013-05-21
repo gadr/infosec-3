@@ -34,9 +34,6 @@ public class Global extends GlobalSettings {
         Group g = new Group();
         g.setName("Administrador");
         g.save();
-        g = new Group();
-        g.setName("Usuário");
-        g.save();
 
         System.out.println("Created admin group");
 
@@ -44,6 +41,10 @@ public class Global extends GlobalSettings {
         u.setName("Administrador Maneiro");
         u.setGroup(g);
         u.setUsername("admin");
+
+        g = new Group();
+        g.setName("Usuário");
+        g.save();
 
         System.out.println("Created user admin");
 

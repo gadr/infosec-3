@@ -27,7 +27,10 @@ public class Application extends Controller {
         boolean passwordChecked = "OK".equals(session("password"));
         boolean signatureChecked = "OK".equals(session("signature"));
         if(user != null && signatureChecked) {
-            return ok(menu.render(user));
+            if(user.getGroup().isAdmin())
+                return ok(menu.render(user));
+            else
+                return ok(usermenu.render(user));
         } else {
             return redirect("/login");
         }

@@ -12,6 +12,7 @@ POST    /login                      controllers.Application.checkLogin()
 POST    /password                   controllers.Application.checkPassword()
 
 GET     /new                        controllers.UserControl.newUser()
+GET     /edit                       controllers.UserControl.editUser()
 POST    /submit                     controllers.UserControl.submit()
 
 # Map static resources from the /public folder to the /assets URL path
