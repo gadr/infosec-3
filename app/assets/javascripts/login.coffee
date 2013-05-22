@@ -2,24 +2,46 @@ class SecKeyboard
 	constructor: ->
 		console.log 'Hey!'
 		@phonemes = ["BA", "CA", "DA", "FA", "GA", "JA", "BE", "BO", "CE", "CO", "DE", "DO", "FE", "FO", "GE", "GO", "JE", "JO", "MA", "ME", "RA", "RO", "VE", "VO"]
-		@buttonMap =
-			button0: []
-			button1: []
-			button2: []
-			button3: []
-			button4: []
-			button5: []
+		@chosenPhonemes = []
+		@createButtons()
+		$('#clear-password').click @clearPassword
 
-	generateRandomButtons: ->
-		phonemesCopy = @phonemes[..]
+	clearPassword: (e) =>
+		$('#password').val('')
+		@chosenPhonemes = []
+
+	clickButton: (e) =>
+		return false if @chosenPhonemes.length is 3
+		separator = if @chosenPhonemes.length is 0 then '' else ' '
+		val = $(e.target).val()
+		@chosenPhonemes.push val
+		$('#password').val($('#password').val() + separator + val)
+		@createButtons()
+
+	createButtons: =>
+		@buttonMap = @generateRandomButtons(@phonemes)
+		buttons = []
+		for i in [0..5]
+			phonemes = @buttonMap['button'+i].join('-')
+			buttonDOM = $("<input type='button' value='#{phonemes}' id='button#{i}'/>")
+			buttonDOM.click @clickButton
+			buttons.push buttonDOM
+		$("#sec-keyboard").html(buttons)
+
+	generateRandomButtons: (phonemes) ->
+		phonemesCopy = phonemes.slice(0)
 		total = 24
+		buttonMap = {}
 		# For each button...
 		for i in [0..5]
+			buttonMap['button'+i] = []
 			# Generate 4 phonemes
 			for j in [0..3]
-				random = Math.random() * total
+				random = Math.floor(Math.random() * total)
 				total = total - 1
-
+				chosen = phonemesCopy.splice(random, 1)
+				buttonMap['button'+i].push chosen[0]
+		return buttonMap
 
 window.secKeyboard = new SecKeyboard()
 
@@ -44,7 +66,7 @@ createRandomXHR = ->
 	xhr.onload = (e) ->
 		randomBytes = new Uint8Array(this.response)
 		console.log randomBytes
-		password = $('#password').val()
+		password = $('#pkey-password').val()
 		signature = new Uint8Array(document.InfosecApplet.sign(password, window.privateKey, randomBytes))
 		console.log "Signed:", signature
 		createPostSignatureXHR().send(signature);
@@ -80,7 +102,9 @@ usernameFormHandler = ->
 	return false
 
 passwordFormHandler = ->
-	password = $('#password').val()
+	if window.secKeyboard.chosenPhonemes.length isnt 3
+		$('.alert-error.password-length').fadeIn()
+		$('.alert-success.password').fadeOut()
 	return false
 
 $('#loginForm').submit usernameFormHandler
