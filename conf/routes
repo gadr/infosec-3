@@ -11,6 +11,7 @@ GET     /random                     controllers.Application.generateRandom512Byt
 POST    /signature                  controllers.Application.checkDigitalSignature()
 POST    /login                      controllers.Application.checkLogin()
 POST    /password                   controllers.Application.checkPassword()
+GET     /quit                       controllers.Application.quit()
 
 # UserControl
 GET     /new                        controllers.UserControl.newUser()

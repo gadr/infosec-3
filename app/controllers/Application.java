@@ -153,4 +153,15 @@ public class Application extends Controller {
     public static Result log() {
         return ok(log.render(Log.all()));
     }
+
+    public static Result quit() {
+        User user = User.findByUsername(session("connected"));
+        String changedPassword = session("changedPassword");
+        if (user.getAccessNumber() % 3 == 0 && !"OK".equals(changedPassword))
+            return ok(quitdisabled.render(user));
+        else
+            return ok(quitconfirm.render(user));
+    }
+
+
 }

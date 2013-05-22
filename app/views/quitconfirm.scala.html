@@ -1,0 +1,23 @@
+@(currentUser: User)
+@import helper.twitterBootstrap._
+
+@user(currentUser) {
+    <script>
+        $(document).ready(function(){
+            $.post('/log', { code: 9001 });
+        });
+    </script>
+    <div style="text-align:center;">
+        <h2>Saída do sistema</h2>
+
+        <p>Pressione o botão Sair para confirmar.</p>
+
+        <a href="/logout" class="btn btn-primary btn-large">Sair</a>
+    </div>
+
+    <ul class="pager">
+        <li class="previous">
+            <a href="/">&larr; Voltar</a>
+        </li>
+    </ul>
+}

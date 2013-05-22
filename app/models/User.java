@@ -194,9 +194,9 @@ public class User extends Model{
         }
     }
 
-    public boolean validate() {
+    public boolean validate(String currentUser) {
         boolean hasErrors = false;
-        if (!isUsernameValid(username)) {
+        if (!currentUser.equals(username) && !isUsernameValid(username)) {
             flash("username", "Login "+username+" já existe.");
             hasErrors = true;
         }

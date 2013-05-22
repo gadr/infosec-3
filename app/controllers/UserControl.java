@@ -22,7 +22,8 @@ public class UserControl extends Controller {
         List<Group> groups = Group.find.all();
         User user = User.findByUsername(session("connected"));
         Form<User> filledForm = userForm.bindFromRequest();
-        return ok(userform.render(user, filledForm, groups));
+        session("action", "new");
+        return ok(userform.render(user, filledForm, groups, "new"));
     }
 
     public static Result getPublic() {
@@ -35,9 +36,9 @@ public class UserControl extends Controller {
         List<Group> groups = Group.find.all();
         User user = User.findByUsername(session("connected"));
         Form<User> filledForm = userForm.fill(user);
-        return ok(userform.render(user, filledForm, groups));
+        session("action", "edit");
+        return ok(userform.render(user, filledForm, groups, "edit"));
     }
-
 
     public static Result submit() {
         Form<User> filledForm = userForm.bindFromRequest();
@@ -51,17 +52,21 @@ public class UserControl extends Controller {
                     flash(key, error.message());
                 }
             }
-            return badRequest(userform.render(user, filledForm, groups));
+            return badRequest(userform.render(user, filledForm, groups, session("action")));
         }
 
         User newUser = new User();
+        // Edição
+        if (user.getUsername().equals(filledForm.field("username").valueOr(""))) {
+            newUser = User.findByUsername(user.getUsername());
+        }
         newUser.name = filledForm.field("name").value();
         newUser.username = filledForm.field("username").value();
         newUser.password = filledForm.field("password").value();
         Group g = Group.findByName(filledForm.field("group.name").value());
         newUser.setGroup(g);
         newUser.passwordConfirmation = filledForm.field("passwordConfirmation").value();
-        hasErrors = newUser.validate();
+        hasErrors = newUser.validate(user.getUsername());
         if (!newUser.password.equals(newUser.passwordConfirmation)) {
             flash("password", "A senha não confere.");
             hasErrors = true;
@@ -83,13 +88,16 @@ public class UserControl extends Controller {
         }
 
         if(hasErrors) {
-            return badRequest(userform.render(user, filledForm, groups));
+            return badRequest(userform.render(user, filledForm, groups, session("action")));
         } else {
             newUser.generateSalt();
             try {
                 newUser.createPassword(newUser.password);
+                // Caso tenha alterado sua senha, coloca na session que foi alterada
+                if (newUser.getGid() == newUser.getGid())
+                    session("changedPassword", "OK");
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
             newUser.save();
             return redirect("/new");

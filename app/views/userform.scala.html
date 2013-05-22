@@ -1,14 +1,25 @@
-@(currentUser: User, myForm: Form[User], groups: List[Group])
+@(currentUser: User, myForm: Form[User], groups: List[Group], action: String)
 @import helper.twitterBootstrap._
 
 @user(currentUser) {
 
+    <script>
+        $(document).ready(function(){
+            action = "@action";
+            if(action === "new")
+                $.post('/log', { code: 6001 });
+            if(action === "edit")
+                $.post('/log', { code: 7001 });
+        });
+    </script>
     @helper.form(action = routes.UserControl.submit(), 'enctype -> "multipart/form-data") {
 
-        @if(flash.size() > 0){
+        @if(flash.size() > 1){
             <div class="alert alert-error">
                 @for((key, value) <- flash){
-                <strong>Erro: </strong>@key @value<br />
+                    @if(!key.equals("action")) {
+                        <strong>Erro: </strong>@key @value<br />
+                    }
                 }
             </div>
         }

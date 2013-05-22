@@ -1,0 +1,13 @@
+@(currentUser: User)
+@import helper.twitterBootstrap._
+
+@user(currentUser) {
+
+    <div style="text-align:center;">
+        <h2>Saída do sistema</h2>
+
+        <p>Sua senha está vencida. Para sair, é necessário ter uma senha pessoal válida para o próximo acesso.</p>
+
+        <a href="/" class="btn btn-primary btn-large">&larr; Voltar</a>
+    </div>
+}
