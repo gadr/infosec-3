@@ -1,6 +1,19 @@
 @(currentUser: User)
 
 @index(currentUser) {
+    <script>
+        from = location.search.split("?from=");
+        if (!from[1]) return
+        from = from[1]
+        if (from === "quit")
+            $.post('/log', {code: 9003})
+        if (from === "new")
+            $.post('/log', {code: 6003})
+        if (from === "edit")
+            $.post('/log', {code: 7003})
+        if (from === "files")
+            $.post('/log', {code: 8002})
+    </script>
     <div class="corpo2">
         <ul>
             <li><a href="/new">Cadastrar um novo usuário</a></li>
