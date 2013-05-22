@@ -50,11 +50,9 @@ public class Application extends Controller {
         String username = request().body().asFormUrlEncoded().get("username")[0];
         User result = User.findByUsername(username);
         if (result != null) {
-            /*
             if (result.isBlocked()) {
                 return forbidden("BLOCKED");
             }
-            */
             result.addAccessNumber();
             result.save();
             session("connected", result.getUsername());
@@ -74,6 +72,9 @@ public class Application extends Controller {
         System.out.println("Phonemes: " + Arrays.toString(phonemesString));
         System.out.println("Phonemes Parsed: " + Arrays.toString(phonemesParsed[0]) + " " + Arrays.toString(phonemesParsed[1]) + " " + Arrays.toString(phonemesParsed[2]));
         User user = User.findByUsername(session("connected"));
+        if (user.isBlocked()) {
+            return forbidden("BLOCKED");
+        }
         String password = user.getPassword();
         String salt = user.getSalt();
         for (int i = 0; i < 4; i++) {
@@ -88,7 +89,14 @@ public class Application extends Controller {
                 }
             }
         }
-        return unauthorized("WRONG");
+        user.addPasswordTry();
+        user.save();
+        if (user.isBlocked()) {
+            return forbidden("BLOCKED");
+        }
+        else {
+            return unauthorized("WRONG");
+        }
     }
 
     public static Result generateRandom512Bytes() throws IOException {
@@ -99,22 +107,45 @@ public class Application extends Controller {
         return ok(b);
     }
 
-    public static Result checkDigitalSignature() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    public static Result checkDigitalSignature() throws NoSuchAlgorithmException {
         byte[] signature = request().body().asRaw().asBytes();
         System.out.println("Signature length:" + signature.length);
+        boolean isVerified = false;
         String username = session("connected");
-        byte[] randomBytes = FileUtils.readFileToByteArray(new File("test/random-"+username));
-        User loggedInUser = User.findByUsername(username);
-        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(loggedInUser.getPublicKey());
-        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signature, randomBytes);
+        User user = User.findByUsername(username);
+        if (user.isBlocked()) {
+            return forbidden("BLOCKED");
+        }
+        byte[] randomBytes = new byte[0];
+        try {
+            randomBytes = FileUtils.readFileToByteArray(new File("test/random-" + username));
+            DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+            PublicKey publicKey = digitalSignatureChecker.readPublicKey(user.getPublicKey());
+            isVerified = digitalSignatureChecker.verifySignature(publicKey, signature, randomBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
+
         if (isVerified) {
             session("signature", "OK");
             return ok("OK");
         }
         else {
             session("signature", "WRONG");
-            return unauthorized("WRONG");
+            user.addSignatureTry();
+            user.save();
+            if (user.isBlocked()) {
+                return forbidden("BLOCKED");
+            }
+            else {
+                return unauthorized("WRONG");
+            }
         }
     }
 

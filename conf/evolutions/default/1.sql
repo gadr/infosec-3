@@ -17,9 +17,9 @@ create table Usuario (
   group_gid                 bigint,
   salt                      varchar(255),
   access_number             integer,
-  blocked                   tinyint(1) default 0,
-  tries                     integer,
-  blocked_since             datetime,
+  password_tries            integer,
+  signature_tries           integer,
+  blocked_until             datetime,
   public_key_path           varchar(255),
   public_key                varbinary(255),
   constraint pk_Usuario primary key (gid))
