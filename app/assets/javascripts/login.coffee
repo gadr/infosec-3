@@ -97,6 +97,8 @@ usernameFormHandler = ->
 		console.log "Exists!"
 		hideAllAlerts()
 		$(".alert-success.username").fadeIn()
+		$("#loginForm").fadeOut ->
+			$("#passwordForm").fadeIn()
 	usernamePromise.fail (jqXHR) ->
 		hideAllAlerts()
 		console.log jqXHR.status
@@ -120,6 +122,8 @@ passwordFormHandler = ->
 		console.log 'Password ok!'
 		hideAllAlerts()
 		$('.alert-success.password').fadeIn()
+		$("#passwordForm").fadeOut ->
+			$("#checkSignature").fadeIn()
 
 	promise.fail (jqXHR) ->
 		console.log 'Password failed!', jqXHR.status
