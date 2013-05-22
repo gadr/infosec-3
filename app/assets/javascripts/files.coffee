@@ -95,5 +95,7 @@ $("#private").submit (e) ->
 	e.preventDefault()
 	password = $("#password").val()
 	window.privateKey = new Uint8Array(window.InfosecApplet.decryptPrivateKey(window.encodedPrivateKey, password))
+	$("#private").fadeOut ->
+		$("#files-container").fadeIn()	
 $('#privateKeyPath').change privateChangeHandler
 $('#files').change filesChangeHandler
