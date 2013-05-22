@@ -68,21 +68,29 @@ public class User extends Model{
 
     public void addPasswordTry() {
         passwordTries++;
+        int code = 3004;
+        Log.log(String.valueOf(code + passwordTries), getUsername());
         if (passwordTries == 3) {
             passwordTries = 0;
             blockedUntil = new Date();
             // Two minutes in the future
             blockedUntil.setTime(blockedUntil.getTime() + (2 * 60 * 1000));
+
+            Log.log("3008", getUsername());
         }
     }
 
     public void addSignatureTry() {
         signatureTries++;
+        int code = 4003;
+        Log.log(String.valueOf(code + signatureTries), getUsername());
         if (signatureTries == 3) {
             signatureTries = 0;
             blockedUntil = new Date();
             // Two minutes in the future
             blockedUntil.setTime(blockedUntil.getTime() + (2 * 60 * 1000));
+
+            Log.log("4007", getUsername());
         }
     }
 

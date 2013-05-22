@@ -12,6 +12,8 @@ POST    /signature                  controllers.Application.checkDigitalSignatur
 POST    /login                      controllers.Application.checkLogin()
 POST    /password                   controllers.Application.checkPassword()
 GET     /quit                       controllers.Application.quit()
+POST    /log                        controllers.Application.createLog()
+
 
 # UserControl
 GET     /new                        controllers.UserControl.newUser()
