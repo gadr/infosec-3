@@ -1,6 +1,18 @@
 window.privateKey = ""
+window.encodedPrivateKey = ""
 
-changeHandler = () ->	
+privateChangeHandler = ->
+	console.log "File", this.files[0]
+	reader = new FileReader()
+	reader.onload = (e) ->
+		window.encodedPrivateKey = new Uint8Array( e.target.result )		
+		console.log("Read:", window.encodedPrivateKey)
+	reader.onerror = (error) ->
+		console.log error
+	reader.readAsArrayBuffer(this.files[0])
+	return true
+
+filesChangeHandler = () ->	
 	@filesArray = this.files
 	for file, i in @filesArray
 		reader = new FileReader()
@@ -26,4 +38,9 @@ createListItem = (files) ->
 		$li.click(-> console.log $(this).data('file'))
 		$("#files-list").append($li)
 
-$('#files').change changeHandler
+
+$("#submitPrivateKey").click ->
+	password = $("#password").val()
+	window.privateKey = document.InfosecApplet.decryptPrivateKey(window.encodedPrivateKey, password)
+$('#privateKeyPath').change privateChangeHandler
+$('#files').change filesChangeHandler
