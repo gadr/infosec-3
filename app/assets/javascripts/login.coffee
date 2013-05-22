@@ -23,7 +23,7 @@ class SecKeyboard
 		buttons = []
 		for i in [0..5]
 			phonemes = @buttonMap['button'+i].join('-')
-			buttonDOM = $("<input type='button' value='#{phonemes}' id='button#{i}'/>")
+			buttonDOM = $("<input type='button' class='btn pass-key' value='#{phonemes}' id='button#{i}'/>")
 			buttonDOM.click @clickButton
 			buttons.push buttonDOM
 		$("#sec-keyboard").html(buttons)
@@ -124,6 +124,7 @@ passwordFormHandler = ->
 	promise.fail (jqXHR) ->
 		console.log 'Password failed!', jqXHR.status
 		hideAllAlerts()
+		window.secKeyboard.clearPassword()
 		if (jqXHR.status is 403)
 			$(".alert-error.username-blocked").fadeIn()
 		else

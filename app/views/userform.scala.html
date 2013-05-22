@@ -50,19 +50,17 @@
             </div>
         </div>
 
-        @helper.inputPassword(
+        @helper.inputText(
             myForm("password"),
             '_label -> "Senha pessoal:",
             '_showConstraints -> true,
-            '_showErrors -> true
+            '_showErrors -> true,
+            '_readonly -> true
         )
 
-        @helper.inputPassword(
-            myForm("passwordConfirmation"),
-            '_label -> "Confirmação da senha pessoal:",
-            '_showConstraints -> false,
-            '_showErrors -> true
-        )
+        <div id="user-keyboard" style="width: 400px"></div>
+        <br>
+        <input type="button" class="btn" value="Clear" id="clear-password">
 
         @helper.inputFile(
             myForm("publicKeyPath"),
@@ -75,4 +73,5 @@
 
         <a class="btn btn-link pull-left" href="/">Voltar</a> <input class="btn btn-primary" type="submit">
     }
+    <script src='@routes.Assets.at("javascripts/user.js")' type="text/javascript"></script>
 }
