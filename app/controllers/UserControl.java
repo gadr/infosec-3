@@ -25,7 +25,6 @@ public class UserControl extends Controller {
         Form<User> filledForm = userForm.bindFromRequest();
         session("action", "new");
         Log.log("5002", user.getUsername());
-        Log.log("6001", user.getUsername());
         return ok(userform.render(user, filledForm, groups, "new"));
     }
 
@@ -41,7 +40,6 @@ public class UserControl extends Controller {
         Form<User> filledForm = userForm.fill(user);
         session("action", "edit");
         Log.log("5003", user.getUsername());
-        Log.log("7001", user.getUsername());
         return ok(userform.render(user, filledForm, groups, "edit"));
     }
 

@@ -40,7 +40,6 @@ public class Log extends Model {
         Message message = Message.findByCode(code);
         Log log = new Log(now, message, username, filename);
         log.save();
-        System.out.println("Mensagem: " + message);
         System.out.println("Log: " + log);
     }
 

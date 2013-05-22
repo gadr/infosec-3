@@ -5,6 +5,7 @@
         <thead>
         <tr>
             <th>Código</th>
+            <th>Data</th>
             <th>Mensagem</th>
         </tr>
         </thead>
@@ -12,6 +13,7 @@
         @for(log <- logs){
             <tr>
                 <td>@log.getCode()</td>
+                <td>@log.getDate()</td>
                 <td>@log.getMessageString()</td>
             </tr>
         }
