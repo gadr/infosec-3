@@ -32,17 +32,23 @@ public class InfosecApplet extends Applet {
         return new byte[]{0};
     }
 
-    public static byte[] decryptPrivateKey(byte[] PKCS5EncodedPrivateKey, String password)
-            throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, BadPaddingException,
-            IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
+    public static byte[] decryptPrivateKey(byte[] PKCS5EncodedPrivateKey, String password) {
 
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-        random.setSeed(password.getBytes());
-        KeyGenerator keyGen = KeyGenerator.getInstance("DES");
-        keyGen.init(56, random);
+        SecureRandom random = null;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+            random.setSeed(password.getBytes("UTF-8"));
+            KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+            keyGen.init(56, random);
 
-        return privateKeyChecker.decryptPKCS5(PKCS5EncodedPrivateKey, keyGen.generateKey());
+            byte[] privateKey = privateKeyChecker.decryptPKCS5(PKCS5EncodedPrivateKey, keyGen.generateKey());
+            return privateKey;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+        }
+        return new byte[]{0};
     }
 
     public static String getIndex(byte[] privateKeyContent, byte[] publicKeyContent,
