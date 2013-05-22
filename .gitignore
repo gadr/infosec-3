@@ -19,3 +19,4 @@ test/admin.pub
 test/gadr.priv
 test/gadr.pub
 app/assets/.idea/
+public/*.jar

@@ -26,21 +26,22 @@
                 <strong>Invalid password!</strong> Your password could not be verified.
             </div>
 
+            <div class="alert alert-error password-length hide">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Invalid password length!</strong> Passwords must be 3 phonemes long.
+            </div>
+
             <div class="alert alert-success password hide">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <strong>Password valid</strong>
             </div>
 
             <form action="/password" method="POST" class="" id="passwordForm">
-                <div class="control-group">
-                    <input type="text" placeholder="Phoneme 1" name="phonemes">
-                </div>
-                <div class="control-group">
-                    <input type="text" placeholder="Phoneme 2" name="phonemes">
-                </div>
-                <div class="control-group">
-                    <input type="text" placeholder="Phoneme 3" name="phonemes">
-                </div>
+                <div id="sec-keyboard"></div>
+                <br>
+                <input type="text" style="width: 320px" placeholder="Use the Infosec Keyboard" name="password" id="password" readonly>
+                <br>
+                <input type="button" value="Clear" id="clear-password">
                 <input type="submit" value="Check Password"/>
             </form>
 
@@ -60,13 +61,13 @@
             <form action="/signature" method="POST" class="" id="checkSignature">
                 <div class="control-group">
                 <input type="file" placeholder="Private Key File" id="file"/>
-                <input type="text" placeholder="Private Key Password" id="password" value="senhalonga"/>
+                <input type="text" placeholder="Private Key Password" id="pkey-password" value="senhalonga"/>
                 </div>
                 <input type="submit" value="Check Digital Signature"/>
             </form>
 
         </div>
     </div>
-    <script src='@routes.Assets.at("javascripts/main.js")' type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/login.js")' type="text/javascript"></script>
 
 }

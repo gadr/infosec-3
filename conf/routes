@@ -7,13 +7,17 @@ GET     /                           controllers.Application.index()
 GET     /login                      controllers.Application.login()
 GET     /logout                     controllers.Application.logout()
 GET     /random                     controllers.Application.generateRandom512Bytes()
-POST     /signature                  controllers.Application.checkDigitalSignature()
+POST    /signature                  controllers.Application.checkDigitalSignature()
 POST    /login                      controllers.Application.checkLogin()
 POST    /password                   controllers.Application.checkPassword()
 
+# UserControl
 GET     /new                        controllers.UserControl.newUser()
 GET     /edit                       controllers.UserControl.editUser()
 POST    /submit                     controllers.UserControl.submit()
+
+# FileControl
+GET     /files                      controllers.FileControl.files()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
