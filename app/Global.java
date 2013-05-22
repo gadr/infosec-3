@@ -49,23 +49,6 @@ public class Global extends GlobalSettings {
         System.out.println("Created admin group");
 
         User u = new User();
-        u.setName("User");
-        u.generateSalt();
-        try {
-            u.createPassword("BEBADO");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        u.setGroup(g);
-        u.setUsername("user");
-        try {
-            u.setPublicKey(FileUtils.readFileToByteArray(new File("test/userpub")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        u.save();
-
-        u = new User();
         u.setName("Administrador Maneiro");
         u.generateSalt();
         try {
