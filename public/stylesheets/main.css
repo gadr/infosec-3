@@ -45,3 +45,13 @@ body {
     margin-left: 0px;
   }
 }
+
+.user-key {
+    margin: 3px;
+    width: 60px !important;
+}
+
+.pass-key {
+    margin: 3px;
+    width: 200px !important;
+}

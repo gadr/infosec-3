@@ -23,7 +23,7 @@
                 <div class="control-group">
                     <input type="text" placeholder="Username" name="username" id="username"/>
                 </div>
-                <input type="submit" value="Login"/>
+                <input type="submit" class="btn btn-primary" value="Login"/>
             </form>
 
             <div class="alert alert-error password hide">
@@ -42,12 +42,12 @@
             </div>
 
             <form action="/password" method="POST" class="" id="passwordForm">
-                <div id="sec-keyboard"></div>
+                <div id="sec-keyboard" style="width: 625px;"></div>
                 <br>
                 <input type="text" style="width: 320px" placeholder="Use the Infosec Keyboard" name="password" id="password" readonly>
                 <br>
-                <input type="button" value="Clear" id="clear-password">
-                <input type="submit" value="Check Password"/>
+                <input type="button" value="Clear" class="btn btn-warning" id="clear-password">
+                <input type="submit" class="btn btn-primary" value="Check Password"/>
             </form>
 
             <div class="alert alert-error signature hide">
@@ -66,9 +66,10 @@
             <form action="/signature" method="POST" class="" id="checkSignature">
                 <div class="control-group">
                 <input type="file" placeholder="Private Key File" id="file"/>
-                <input type="text" placeholder="Private Key Password" id="pkey-password" value="senhalonga"/>
+                <br>
+                <input type="text" placeholder="Private Key Password" id="pkey-password"/>
                 </div>
-                <input type="submit" value="Check Digital Signature"/>
+                <input type="submit" class="btn btn-primary" value="Check Digital Signature"/>
             </form>
 
         </div>

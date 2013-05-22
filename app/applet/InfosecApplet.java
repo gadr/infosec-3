@@ -14,7 +14,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 public class InfosecApplet extends Applet {
+    public static final String version = "0.1.1";
     public static byte[] sign(String password, byte[] privateKeyBytes, byte[] randomBytes) {
+        System.out.println("Version " + version);
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
         System.out.println("Password: " + password);
         System.out.println("File: " + new String(privateKeyBytes));
