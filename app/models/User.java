@@ -2,11 +2,8 @@ package models;
 
 import javax.persistence.*;
 
-import org.springframework.beans.factory.annotation.Required;
 import play.db.ebean.*;
 import play.data.validation.*;
-import play.libs.F;
-import sun.security.provider.MD5;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -14,7 +11,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 
 import static play.mvc.Controller.flash;
 
@@ -44,11 +40,11 @@ public class User extends Model{
 
     public Integer accessNumber = 1;
 
-    public Boolean blocked = Boolean.FALSE;
+    public Integer passwordTries = 0;
 
-    public Integer tries = 0;
+    public Integer signatureTries = 0;
 
-    public Date blockedSince;
+    public Date blockedUntil = new Date();
 
     public String publicKeyPath;
 
@@ -58,20 +54,40 @@ public class User extends Model{
         return gid;
     }
 
-    public Date getBlockedSince() {
-        return blockedSince;
+    public Date getBlockedUntil() {
+        return blockedUntil;
     }
 
-    public Boolean getBlocked() {
-        return blocked;
+    public Integer getPasswordTries() {
+        return passwordTries;
     }
 
-    public Integer getTries() {
-        return tries;
+    public Integer getSignatureTries() {
+        return passwordTries;
     }
 
-    public void addTry() {
-        tries++;
+    public void addPasswordTry() {
+        passwordTries++;
+        if (passwordTries == 3) {
+            passwordTries = 0;
+            blockedUntil = new Date();
+            // Two minutes in the future
+            blockedUntil.setTime(blockedUntil.getTime() + (2 * 60 * 1000));
+        }
+    }
+
+    public void addSignatureTry() {
+        signatureTries++;
+        if (signatureTries == 3) {
+            signatureTries = 0;
+            blockedUntil = new Date();
+            // Two minutes in the future
+            blockedUntil.setTime(blockedUntil.getTime() + (2 * 60 * 1000));
+        }
+    }
+
+    public boolean isBlocked() {
+        return (this.getBlockedUntil().getTime() - new Date().getTime()) > 0;
     }
 
     public void setSalt(String salt) {
@@ -86,11 +102,6 @@ public class User extends Model{
         SecureRandom random = new SecureRandom();
         Integer salt = random.nextInt(999999999);
         return this.salt = salt.toString();
-    }
-
-    public void setBlocked(Boolean blocked) {
-        this.blocked = blocked;
-        this.blockedSince = new Date();
     }
 
     public void setName(String name) {

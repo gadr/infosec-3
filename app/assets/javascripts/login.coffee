@@ -51,9 +51,12 @@ createPostSignatureXHR = ->
 	xhr = new XMLHttpRequest();
 	xhr.open('POST', '/signature', true);
 	xhr.onload = ->
+		hideAllAlerts()
 		if this.response is "OK" and this.status is 200
 			console.log 'success'
 			window.location.href = "/"
+		else if (this.status is 403)
+				$(".alert-error.username-blocked").fadeIn()
 		else
 			console.error 'unauthorized!'
 			$(".alert-error.signature").fadeIn()
@@ -92,19 +95,22 @@ usernameFormHandler = ->
 	usernamePromise = $.post('/login', username: username)
 	usernamePromise.done (data) ->
 		console.log "Exists!"
+		hideAllAlerts()
 		$(".alert-success.username").fadeIn()
-		$(".alert-error.username").fadeOut()
 	usernamePromise.fail (jqXHR) ->
+		hideAllAlerts()
 		console.log jqXHR.status
-		$(".alert-success.username").fadeOut()
-		$(".alert-error.username").fadeIn()
+		if (jqXHR.status is 403)
+			$(".alert-error.username-blocked").fadeIn()
+		else
+			$(".alert-error.username").fadeIn()
 
 	return false
 
 passwordFormHandler = ->
 	if window.secKeyboard.chosenPhonemes.length isnt 3
+		hideAllAlerts()
 		$('.alert-error.password-length').fadeIn()
-		$('.alert-success.password').fadeOut()
 		return false
 
 	$('.alert-error.password-length').fadeOut()
@@ -112,15 +118,28 @@ passwordFormHandler = ->
 	promise = $.post('/password', phonemes: window.secKeyboard.chosenPhonemes)
 	promise.done (data) ->
 		console.log 'Password ok!'
-		$('.alert-error.password').fadeOut()
+		hideAllAlerts()
 		$('.alert-success.password').fadeIn()
 
-	promise.fail (reason) ->
-		console.log 'Password failed!'
-		$('.alert-error.password').fadeIn()
-		$('.alert-success.password').fadeOut()
+	promise.fail (jqXHR) ->
+		console.log 'Password failed!', jqXHR.status
+		hideAllAlerts()
+		if (jqXHR.status is 403)
+			$(".alert-error.username-blocked").fadeIn()
+		else
+			$('.alert-error.password').fadeIn()
 
 	return false
+
+hideAllAlerts = ->
+	$('.alert-success.signature').fadeOut()
+	$('.alert-error.signature').fadeOut()
+	$('.alert-success.password').fadeOut()
+	$('.alert-error.password').fadeOut()
+	$('.alert-error.password-length').fadeOut()
+	$(".alert-success.username").fadeOut()
+	$(".alert-error.username").fadeOut()
+	$(".alert-error.username-blocked").fadeOut()
 
 $('#loginForm').submit usernameFormHandler
 $('#passwordForm').submit passwordFormHandler
