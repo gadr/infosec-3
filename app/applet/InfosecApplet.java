@@ -3,15 +3,14 @@ package applet;
 import checker.DigitalSignatureChecker;
 import checker.EnvelopeChecker;
 import checker.PrivateKeyChecker;
-import org.apache.commons.io.FileUtils;
 
 import javax.crypto.*;
 import java.applet.Applet;
-import java.io.File;
-import java.io.IOException;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class InfosecApplet extends Applet {
     public static final String version = "0.1.1";
@@ -75,5 +74,59 @@ public class InfosecApplet extends Applet {
             System.out.println("Error!");
         }
         return "Error!";
+    }
+
+    public static String checkStatus(byte[] privateKeyContent, byte[] publicKeyContent,
+                                  byte[] envelopeContent, byte[] signatureContent, byte[] encryptedContent) {
+
+        try {
+            DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+            PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
+
+            PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyContent);
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyContent);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            byte[] seed = EnvelopeChecker.getSeedFromEnvelope(envelopeContent, privateKey);
+            Key key = EnvelopeChecker.getKeyFromSeed(seed);
+            byte[] content = privateKeyChecker.decryptPKCS5(encryptedContent, key);
+
+            boolean result = digitalSignatureChecker.verifySignature(publicKey, signatureContent, content);
+            return result? "OK" : "NOT OK";
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+        }
+        return "NOT OK";
+    }
+
+    public static String getBase64File(byte[] privateKeyContent, byte[] publicKeyContent,
+                                     byte[] envelopeContent, byte[] signatureContent, byte[] encryptedContent) {
+
+        try {
+            DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+            PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
+
+            PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyContent);
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyContent);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            byte[] seed = EnvelopeChecker.getSeedFromEnvelope(envelopeContent, privateKey);
+            Key key = EnvelopeChecker.getKeyFromSeed(seed);
+            byte[] content = privateKeyChecker.decryptPKCS5(encryptedContent, key);
+
+            boolean result = digitalSignatureChecker.verifySignature(publicKey, signatureContent, content);
+
+            if (result) {
+                byte[] base64Content = Base64.encodeBase64(content);
+                return new String(base64Content, "UTF-8");
+            } else
+                return "Erro";
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+        }
+        return "Opa";
     }
 }
