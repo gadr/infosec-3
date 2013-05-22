@@ -1,13 +1,14 @@
 class UserKeyboard
-	constructor: ->
+	constructor: (@passwordId, @keyboardId, @clearId) ->
 		console.log 'Hey!'
+		$(@passwordId).attr('readonly', 'readonly')
 		@phonemes = ["BA", "CA", "DA", "FA", "GA", "JA", "BE", "BO", "CE", "CO", "DE", "DO", "FE", "FO", "GE", "GO", "JE", "JO", "MA", "ME", "RA", "RO", "VE", "VO"]
 		@chosenPhonemes = []
 		@createButtons()
-		$('#clear-password').click @clearPassword
+		$(@clearId).click @clearPassword
 
 	clearPassword: (e) =>
-		$('#password').val('')
+		$(@passwordId).val('')
 		@chosenPhonemes = []
 		@createButtons()
 
@@ -15,7 +16,7 @@ class UserKeyboard
 		return false if @chosenPhonemes.length is 3
 		val = $(e.target).val()
 		@chosenPhonemes.push val
-		$('#password').val($('#password').val() + val)
+		$(@passwordId).val($(@passwordId).val() + val)
 		$(e.target).hide()
 
 	createButtons: =>
@@ -24,6 +25,7 @@ class UserKeyboard
 			buttonDOM = $("<input type='button' class='btn user-key' value='#{phoneme}' id='button#{phoneme}'/>")
 			buttonDOM.click @clickButton
 			buttons.push buttonDOM
-		$("#user-keyboard").html(buttons)
+		$(@keyboardId).html(buttons)
 
-window.userKeyboard = new UserKeyboard()
+window.userKeyboard = new UserKeyboard('#password', '#user-keyboard', '#clear-password')
+window.userKeyboardConfirmation = new UserKeyboard('#passwordConfirmation', '#user-keyboard-confirm', '#clear-password-confirm')

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import org.apache.commons.codec.binary.Base64;
 
 public class InfosecApplet extends Applet {
-    public static final String version = "0.1.1";
+    public static final String version = "1.0.0";
     public static byte[] sign(String password, byte[] privateKeyBytes, byte[] randomBytes) {
         System.out.println("Version " + version);
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
@@ -34,7 +34,7 @@ public class InfosecApplet extends Applet {
     }
 
     public static byte[] decryptPrivateKey(byte[] PKCS5EncodedPrivateKey, String password) {
-
+        System.out.println("Version " + version);
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
         SecureRandom random = null;
         try {
@@ -54,7 +54,7 @@ public class InfosecApplet extends Applet {
 
     public static String getIndex(byte[] privateKeyContent, byte[] publicKeyContent,
                                   byte[] envelopeContent, byte[] signatureContent, byte[] encryptedContent) {
-
+        System.out.println("Version " + version);
         try {
             DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
             PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();

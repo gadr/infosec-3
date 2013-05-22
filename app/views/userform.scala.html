@@ -6,7 +6,7 @@
     @helper.form(action = routes.UserControl.submit(), 'enctype -> "multipart/form-data") {
 
         @if(flash.size() > 0){
-            <div class="alert-alert error">
+            <div class="alert alert-error">
                 @for((key, value) <- flash){
                 <strong>Erro: </strong>@key @value<br />
                 }
@@ -54,13 +54,25 @@
             myForm("password"),
             '_label -> "Senha pessoal:",
             '_showConstraints -> true,
-            '_showErrors -> true,
-            '_readonly -> true
+            '_showErrors -> true
         )
 
         <div id="user-keyboard" style="width: 400px"></div>
+        <input type="button" class="btn btn-warning" value="Clear" id="clear-password">
         <br>
-        <input type="button" class="btn" value="Clear" id="clear-password">
+        <br>
+
+        @helper.inputText(
+            myForm("passwordConfirmation"),
+            '_label -> "Confirmação da senha pessoal:",
+            '_showConstraints -> false,
+            '_showErrors -> true
+        )
+
+        <div id="user-keyboard-confirm" style="width: 400px"></div>
+        <input type="button" class="btn btn-warning" value="Clear" id="clear-password-confirm">
+        <br>
+        <br>
 
         @helper.inputFile(
             myForm("publicKeyPath"),
@@ -70,6 +82,7 @@
             '_showErrors -> true
         )
 
+        <br>
 
         <a class="btn btn-link pull-left" href="/">Voltar</a> <input class="btn btn-primary" type="submit">
     }
