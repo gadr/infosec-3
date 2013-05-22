@@ -27,7 +27,7 @@ public class PrivateKeyChecker {
         keyGen.init(56, random);
         byte[] pkcs8PrivateKey = decryptPKCS5(encodedPrivateKey, keyGen.generateKey());
 
-        System.out.println("PrivateKey decrypted" + new String(pkcs8PrivateKey));
+        //System.out.println("PrivateKey decrypted" + new String(pkcs8PrivateKey));
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(pkcs8PrivateKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
@@ -35,7 +35,7 @@ public class PrivateKeyChecker {
 
     public byte[] sign(PrivateKey key, byte[] bytes) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
         Signature signature = Signature.getInstance("MD5WithRSA");
-        System.out.println("Signing " + new String(bytes));
+        //System.out.println("Signing " + new String(bytes));
         signature.initSign(key);
         signature.update(bytes);
         byte[] signatureBytes = signature.sign();

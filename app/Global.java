@@ -95,6 +95,8 @@ public class Global extends GlobalSettings {
 
         u.save();
 
+
+        /*
         try {
             Process process = Runtime.getRuntime().exec( new String[] { "./create-applet-jar.sh" } );
             process.waitFor();
@@ -104,6 +106,7 @@ public class Global extends GlobalSettings {
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        */
 
     }
 
