@@ -38,7 +38,7 @@ public class User extends Model{
 
     public String salt = "";
 
-    public Integer accessNumber = 1;
+    public Integer accessNumber = 0;
 
     public Integer passwordTries = 0;
 

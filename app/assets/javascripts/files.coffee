@@ -82,9 +82,16 @@ createListItem = (files) ->
 		downloadLink = ""
 		if fileResult is "OK"
 			fileBase64 = window.InfosecApplet.getBase64File(window.privateKey, window.publicKey, fileEnv.content, fileAsd.content, fileEnc.content)
+			$.post("/log", {code: 8005, fileName: map[allowedFile.simpleName] })
+			$.post("/log", {code: 8004, fileName: map[allowedFile.simpleName] })
 			downloadLink = "<a download="+map[allowedFile.simpleName]+" href=\"data:application/octet-stream;charset=utf-8;base64,"+fileBase64+"\">"+map[allowedFile.simpleName]+"</a>"
+		else
+			$.post("/log", {code: 8006, fileName: map[allowedFile.simpleName] })
+			$.post("/log", {code: 8007, fileName: map[allowedFile.simpleName] })
+
 		if downloadLink is "" then downloadLink = map[allowedFile.simpleName]
-		$tr = $("<tr><td>"+downloadLink+"</td><td>"+allowedFile.simpleName+"</td><td>"+fileResult+"</td></tr>")		
+		$tr = $("<tr><td>"+downloadLink+"</td><td>"+allowedFile.simpleName+"</td><td>"+fileResult+"</td></tr>")
+		$('a', $tr).click -> $.post('/log', { code: 8003, fileName: $(this).html()})
 		alreadyAdded[allowedFile.simpleName] = true
 		$("#files-table tbody").append($tr)
 		$("#files-table").fadeIn()

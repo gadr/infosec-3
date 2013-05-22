@@ -188,9 +188,11 @@ public class Application extends Controller {
     }
 
     public static Result createLog() {
-        String code = request().body().asFormUrlEncoded().get("code")[0];
+        Http.RequestBody body = request().body();
+        String code = body.asFormUrlEncoded().get("code") != null ? body.asFormUrlEncoded().get("code")[0] : "";
+        String filename = body.asFormUrlEncoded().get("fileName") != null ? request().body().asFormUrlEncoded().get("fileName")[0] :  "";
         User user = User.findByUsername(session("connected"));
-        Log.log(code, user.getUsername());
+        Log.log(code, user.getUsername(), filename);
         return ok();
     }
 
