@@ -1,0 +1,10 @@
+@(logs: List[Log])
+
+@main {
+    <ul>
+    @for(log <- logs){
+        <li>@log.toString()</li>
+    }
+    </ul>
+
+}

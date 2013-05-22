@@ -9,6 +9,22 @@ create table Grupo (
   constraint pk_Grupo primary key (gid))
 ;
 
+create table InfosecLog (
+  gid                       bigint auto_increment not null,
+  username                  varchar(255),
+  filename                  varchar(255),
+  date                      datetime,
+  message_gid               bigint,
+  constraint pk_InfosecLog primary key (gid))
+;
+
+create table Mensagem (
+  gid                       bigint auto_increment not null,
+  code                      varchar(255),
+  message                   varchar(255),
+  constraint pk_Mensagem primary key (gid))
+;
+
 create table Usuario (
   gid                       bigint auto_increment not null,
   username                  varchar(255),
@@ -25,8 +41,10 @@ create table Usuario (
   constraint pk_Usuario primary key (gid))
 ;
 
-alter table Usuario add constraint fk_Usuario_group_1 foreign key (group_gid) references Grupo (gid) on delete restrict on update restrict;
-create index ix_Usuario_group_1 on Usuario (group_gid);
+alter table InfosecLog add constraint fk_InfosecLog_message_1 foreign key (message_gid) references Mensagem (gid) on delete restrict on update restrict;
+create index ix_InfosecLog_message_1 on InfosecLog (message_gid);
+alter table Usuario add constraint fk_Usuario_group_2 foreign key (group_gid) references Grupo (gid) on delete restrict on update restrict;
+create index ix_Usuario_group_2 on Usuario (group_gid);
 
 
 
@@ -35,6 +53,10 @@ create index ix_Usuario_group_1 on Usuario (group_gid);
 SET FOREIGN_KEY_CHECKS=0;
 
 drop table Grupo;
+
+drop table InfosecLog;
+
+drop table Mensagem;
 
 drop table Usuario;
 

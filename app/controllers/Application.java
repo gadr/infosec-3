@@ -1,6 +1,7 @@
 package controllers;
 
 import checker.DigitalSignatureChecker;
+import models.Log;
 import models.User;
 import org.apache.commons.io.FileUtils;
 import play.*;
@@ -149,4 +150,7 @@ public class Application extends Controller {
         }
     }
 
+    public static Result log() {
+        return ok(log.render(Log.all()));
+    }
 }

@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index()
+GET     /log                        controllers.Application.log()
 GET     /login                      controllers.Application.login()
 GET     /logout                     controllers.Application.logout()
 GET     /random                     controllers.Application.generateRandom512Bytes()
