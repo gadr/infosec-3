@@ -20,4 +20,5 @@ public class InfosecFilesApplet extends Applet {
 
         return "";
     }
+
 }

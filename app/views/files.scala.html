@@ -3,9 +3,35 @@
 
 @user(currentUser) {
 
-    Mostrando arquivos
+<applet code="applet.InfosecFilesApplet"
+        id="applet"
+        name="InfosecFilesApplet"
+        archive="/assets/filesApplet.jar"
+        width="10"
+        height="10" >
+</applet>
 
-    <input name="filesToUpload[]" id="files" type="file" multiple="">
+    <div class="clearfix" id="privateKeyPath_field">
+        <label for="privateKeyPath">Caminho do arquivo com a chave privada:</label>
+        <div class="input">
+
+            <input type="file" id="privateKeyPath" name="privateKeyPath" maxlength="255">
+
+            <span class="help-inline"></span>
+            <span class="help-block"></span>
+        </div>
+    </div>
+
+    <div class="clearfix" id="files_field">
+        <label for="files">Caminho do arquivo com a chave privada:</label>
+        <div class="input">
+
+            <input type="file" id="files" name="files[]" multiple="">
+
+            <span class="help-inline"></span>
+            <span class="help-block"></span>
+        </div>
+    </div>
 
     <ul id="files-list">
     </ul>

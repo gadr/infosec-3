@@ -6,10 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import play.mvc.Result;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -22,63 +21,62 @@ import static play.test.Helpers.contentAsString;
 
 public class InfosecFilesAppletTest extends BaseModelTest {
 
+    PrivateKey privateKey;
+    Key key;
+
     @Before
-    public void createKeys() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-            BadPaddingException, IllegalBlockSizeException, IOException {
-        // Path to the private key
-        String username = "gadr";
-        String privateKeyPath = "test/" + username + ".priv";
-        String publicKeyPath = "test/" + username + ".pub";
-        String password = "superfrasemuitogrande";
-
-        utils.KeyPairGenerator.generateKeyPair(username, password);
-
-        assertThat(new File(privateKeyPath).exists());
-        assertThat(new File(publicKeyPath).exists());
-    }
-
-    @Test
-    public void checkDigitalSignature() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-            BadPaddingException, IllegalBlockSizeException, IOException, InvalidKeySpecException, SignatureException {
-        // The Private Key Chair used by our applet
+    public void getPrivateKey() throws IOException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException {
         PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
-        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        // Path to the private key
-        String privateKeyPath = "test/gadr.priv";
-        String publicKeyPath = "test/gadr.pub";
-        String password = "superfrasemuitogrande";
-        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
-        assertThat(password64Bits.length == 8);
-
-        // Generate random bytes. Will be used for the Digital Signature
-        Result generateRandomBytes = callAction(routes.ref.Application.generateRandom512Bytes());
-        byte[] randomBytes = contentAsString(generateRandomBytes).getBytes();
-        assertThat(randomBytes.length == 512);
+        String username = "user";
+        String privateKeyPath = "test/" + username + "priv";
 
         File encodedPrivateKeyFile = new File(privateKeyPath);
         byte[] encodedPrivateKey = FileUtils.readFileToByteArray(encodedPrivateKeyFile);
 
-        // Use the private key checker to decrypt the pkcs5 key into a encoded pkcs8 key
-        PrivateKey decryptedKey = privateKeyChecker.decryptPrivateKey(encodedPrivateKey, password);
-
-        // Sign the random bytes with the key
-        byte[] signatureBytes = privateKeyChecker.sign(decryptedKey, randomBytes);
-        assertThat(signatureBytes.length > 0);
-
-        // Get the public key from File System
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(FileUtils.readFileToByteArray(new File(publicKeyPath)));
-
-        // Check the signature with the public key
-        boolean isVerified = digitalSignatureChecker.verifySignature(publicKey, signatureBytes, randomBytes);
-        assertThat(isVerified);
+        PrivateKey privateKey = privateKeyChecker.decryptPrivateKey(encodedPrivateKey, password);
     }
 
     @Test
-    public void checkByteToStringConversion() {
-        byte[] b = new byte[512];
-        new Random().nextBytes(b);
-        String s = new String(b);
-        byte[] convertedBytes = s.getBytes();
-        assertThat(Arrays.equals(b, convertedBytes));
+    public void getSeed() throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
+        // Arrange
+        String fileEnv = "test/index.env";
+        byte[] seed;
+        byte[] envelopeContent = FileUtils.readFileToByteArray(new File(fileEnv));
+
+        // Test
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        seed = cipher.doFinal(envelopeContent);
+
+        // Assert
+        assertThat(seed.length).isGreaterThan(0);
     }
+
+    @Test
+    public void getKeyFromEnvelope() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
+        // Arrange
+        String fileEnv = "test/index.env";
+        byte[] seed;
+        byte[] envelopeContent = FileUtils.readFileToByteArray(new File(fileEnv));
+
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        seed = cipher.doFinal(envelopeContent);
+
+        // Test
+        SecureRandom random = new SecureRandom(seed);
+        KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+        keyGen.init(56, random);
+        Key key = keyGen.generateKey();
+
+
+        // Assert
+        String fileEnc = "test/index.enc";
+        byte[] encryptedContent = FileUtils.readFileToByteArray(new File(fileEnc));
+
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] content = cipher.doFinal(encryptedContent);
+
+    }
+
 }
