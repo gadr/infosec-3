@@ -39,8 +39,9 @@ createListItem = (files) ->
 		$("#files-list").append($li)
 
 
-$("#submitPrivateKey").click ->
+$("#private").submit (e) ->
+	e.preventDefault()
 	password = $("#password").val()
-	window.privateKey = document.InfosecApplet.decryptPrivateKey(window.encodedPrivateKey, password)
+	window.privateKey = new Uint8Array(window.InfosecApplet.decryptPrivateKey(window.encodedPrivateKey, password))
 $('#privateKeyPath').change privateChangeHandler
 $('#files').change filesChangeHandler

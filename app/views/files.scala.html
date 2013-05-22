@@ -3,37 +3,32 @@
 
 @user(currentUser) {
 
-<applet code="applet.InfosecApplet"
-        id="applet"
-        name="InfosecApplet"
-        archive="/assets/infosecApplet.jar"
-        width="10"
-        height="10" >
-</applet>
+    <form id="private">
+        <div class="clearfix" id="privateKeyPath_field">
+            <label for="privateKeyPath">Caminho do arquivo com a chave privada:</label>
+            <div class="input">
 
-    <div class="clearfix" id="privateKeyPath_field">
-        <label for="privateKeyPath">Caminho do arquivo com a chave privada:</label>
-        <div class="input">
+                <input type="file" id="privateKeyPath" name="privateKeyPath" maxlength="255">
 
-            <input type="file" id="privateKeyPath" name="privateKeyPath" maxlength="255">
-
-            <span class="help-inline"></span>
-            <span class="help-block"></span>
+                <span class="help-inline"></span>
+                <span class="help-block"></span>
+            </div>
         </div>
-    </div>
 
-    <div class="clearfix  " id="password_field">
-        <label for="password">Senha:</label>
-        <div class="input">
+        <div class="clearfix  " id="password_field">
+            <label for="password">Senha:</label>
+            <div class="input">
 
-            <input type="text" id="password" name="password" value="segredo" maxlength="50">
+                <input type="text" id="password" name="password" value="senhalonga" maxlength="50">
 
-            <span class="help-inline"></span>
-            <span class="help-block"></span>
+                <span class="help-inline"></span>
+                <span class="help-block"></span>
+            </div>
         </div>
-    </div>
-    <input class="btn" id="submitPrivateKey" type="submit" value="Enviar">
+        <input class="btn" id="submitPrivateKey" type="submit" value="Enviar">
+    </form>
 
+    <hr>
     <div class="clearfix" id="files_field">
         <label for="files">Arquivos:</label>
         <div class="input">
@@ -48,5 +43,12 @@
     <ul id="files-list">
     </ul>
 
+    <applet code="applet.InfosecApplet"
+            id="applet"
+            name="InfosecApplet"
+            archive="/assets/infosecApplet.jar"
+            width="10"
+            height="10" >
+    </applet>
     <script src='@routes.Assets.at("javascripts/files.js")' type="text/javascript"></script>
 }
