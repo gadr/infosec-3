@@ -25,6 +25,12 @@ public class UserControl extends Controller {
         return ok(userform.render(user, filledForm, groups));
     }
 
+    public static Result getPublic() {
+        List<Group> groups = Group.find.all();
+        User user = User.findByUsername(session("connected"));
+        return ok(user.getPublicKey());
+    }
+
     public static Result editUser() {
         List<Group> groups = Group.find.all();
         User user = User.findByUsername(session("connected"));

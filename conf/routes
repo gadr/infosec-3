@@ -15,6 +15,7 @@ POST    /password                   controllers.Application.checkPassword()
 GET     /new                        controllers.UserControl.newUser()
 GET     /edit                       controllers.UserControl.editUser()
 POST    /submit                     controllers.UserControl.submit()
+GET     /getPublic                  controllers.UserControl.getPublic()
 
 # FileControl
 GET     /files                      controllers.FileControl.files()
