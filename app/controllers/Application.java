@@ -29,10 +29,14 @@ public class Application extends Controller {
         boolean passwordChecked = "OK".equals(session("password"));
         boolean signatureChecked = "OK".equals(session("signature"));
         if(user != null && passwordChecked && signatureChecked) {
-            if(user.getGroup().isAdmin())
+            if(user.getGroup().isAdmin()) {
+                Log.log("5001", user.getUsername());
                 return ok(menu.render(user));
-            else
+            }
+            else {
+                Log.log("5001", user.getUsername());
                 return ok(usermenu.render(user));
+            }
         } else {
             return redirect("/login");
         }
@@ -172,5 +176,12 @@ public class Application extends Controller {
 
     public static Result log() {
         return ok(log.render(Log.all()));
+    }
+
+    public static Result createLog() {
+        String code = request().body().asFormUrlEncoded().get("code")[0];
+        User user = User.findByUsername(session("connected"));
+        Log.log(code, user.getUsername());
+        return ok();
     }
 }

@@ -102,13 +102,19 @@ public class Log extends Model {
         find.ref(id).delete();
     }
 
+    public String getCode() {
+        return message.getCode();
+    }
+
+    public String getMessageString() {
+        return message.getMessage().replaceAll("<login_name>", username).replaceAll("<arq_name>", filename);
+    }
+
     @Override
     public String toString() {
-        System.out.println(message);
-        System.out.println(message.getMessage());
         return "Log{" +
                 "date=" + date +
-                ", message=" + message.getMessage().replaceAll("<login_name>", username) +
+                ", message=" + getMessageString() +
                 ", filename='" + filename + '\'' +
                 '}';
     }
