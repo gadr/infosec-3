@@ -3,10 +3,7 @@ package checker;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
@@ -17,17 +14,18 @@ import java.util.Arrays;
 
 public class PrivateKeyChecker {
 
-    public byte[] decryptPKCS5(byte[] encoded, byte[] pass) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        byte[] password64Bits = Arrays.copyOf(pass, 8); // use only first 64 bits
-
-        SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
+    public byte[] decryptPKCS5(byte[] encoded, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+        cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(encoded);
     }
 
     public PrivateKey decryptPrivateKey(byte[] encodedPrivateKey, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        byte[] pkcs8PrivateKey = decryptPKCS5(encodedPrivateKey, password.getBytes());
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        random.setSeed(password.getBytes());
+        KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+        keyGen.init(56, random);
+        byte[] pkcs8PrivateKey = decryptPKCS5(encodedPrivateKey, keyGen.generateKey());
 
         System.out.println("PrivateKey decrypted" + new String(pkcs8PrivateKey));
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(pkcs8PrivateKey);

@@ -114,16 +114,11 @@ public class User extends Model{
     }
 
     @SuppressWarnings("all")
-    public String generatePassword(String plainPassword) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        String passwordAndSalt = plainPassword + this.salt;
-
-        messageDigest.update(passwordAndSalt.getBytes());
-        byte[] password = messageDigest.digest();
-        return this.password = toHex(new String(password));
+    public String createPassword(String plainPassword) throws NoSuchAlgorithmException {
+        return this.password = generatePassword(plainPassword, this.salt);
     }
 
-    public String toHex(String arg) {
+    public static String toHex(String arg) {
         try {
             return String.format("%040x", new BigInteger(1, arg.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
@@ -152,6 +147,15 @@ public class User extends Model{
     public static User find(String gid) {
         Long newGid = Long.parseLong(gid);
         return find.where().idEq(newGid).findUnique();
+    }
+
+    @SuppressWarnings("all")
+    public static String generatePassword(String plainPassword, String salt) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        String passwordAndSalt = plainPassword + salt;
+        messageDigest.update(passwordAndSalt.getBytes());
+        byte[] password = messageDigest.digest();
+        return toHex(new String(password));
     }
 
     public static User findByUsername(String username) {
