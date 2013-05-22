@@ -17,14 +17,17 @@ import java.util.Arrays;
 
 public class PrivateKeyChecker {
 
-    public PrivateKey decryptPrivateKey(byte[] encodedPrivateKey, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
-        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+    public byte[] decryptPKCS5(byte[] encoded, byte[] pass) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        byte[] password64Bits = Arrays.copyOf(pass, 8); // use only first 64 bits
 
-        System.out.println("PrivateKey " + new String(encodedPrivateKey));
         SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
-        byte[] pkcs8PrivateKey = cipher.doFinal(encodedPrivateKey);
+        return cipher.doFinal(encoded);
+    }
+
+    public PrivateKey decryptPrivateKey(byte[] encodedPrivateKey, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        byte[] pkcs8PrivateKey = decryptPKCS5(encodedPrivateKey, password.getBytes());
 
         System.out.println("PrivateKey decrypted" + new String(pkcs8PrivateKey));
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(pkcs8PrivateKey);

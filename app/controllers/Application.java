@@ -26,7 +26,7 @@ public class Application extends Controller {
         User user = User.findByUsername(session("connected"));
         boolean passwordChecked = "OK".equals(session("password"));
         boolean signatureChecked = "OK".equals(session("signature"));
-        if(user != null && signatureChecked) {
+        if(user != null && passwordChecked && signatureChecked) {
             return ok(menu.render(user));
         } else {
             return redirect("/login");

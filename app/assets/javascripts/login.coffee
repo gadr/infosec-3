@@ -105,6 +105,21 @@ passwordFormHandler = ->
 	if window.secKeyboard.chosenPhonemes.length isnt 3
 		$('.alert-error.password-length').fadeIn()
 		$('.alert-success.password').fadeOut()
+		return false
+
+	$('.alert-error.password-length').fadeOut()
+
+	promise = $.post('/password', phonemes: window.secKeyboard.chosenPhonemes)
+	promise.done (data) ->
+		console.log 'Password ok!'
+		$('.alert-error.password').fadeOut()
+		$('.alert-success.password').fadeIn()
+
+	promise.fail (reason) ->
+		console.log 'Password failed!'
+		$('.alert-error.password').fadeIn()
+		$('.alert-success.password').fadeOut()
+
 	return false
 
 $('#loginForm').submit usernameFormHandler
