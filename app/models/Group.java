@@ -53,4 +53,8 @@ public class Group extends Model {
     public static void delete(Long id) {
         find.ref(id).delete();
     }
+
+    public boolean isAdmin() {
+        return name.equals("Administrador");
+    }
 }

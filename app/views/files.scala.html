@@ -1,0 +1,14 @@
+@(currentUser: User)
+@import helper.twitterBootstrap._
+
+@user(currentUser) {
+
+    Mostrando arquivos
+
+    <input name="filesToUpload[]" id="files" type="file" multiple="">
+
+    <ul id="files-list">
+    </ul>
+
+    <script src='@routes.Assets.at("javascripts/files.js")' type="text/javascript"></script>
+}

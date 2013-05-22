@@ -33,14 +33,14 @@
             <label for="group">Grupo:</label>
             <div class="input">
 
-                <select name="group.gid" id="group">
+                <select name="group.name" id="group">
                     @for(group <- groups){
-                        @if(myForm("group.gid").value() != null) {
-                            @if(myForm("group.gid").value().equals(group.getGid().toString())) {
-                                <option value="@group.getGid()" selected>@group.getName()</option>
+                        @if(myForm("group.name").value() != null) {
+                            @if(myForm("group.name").value().equals(group.getName().toString())) {
+                                <option value="@group.getName()" selected>@group.getName()</option>
                             }
                         } else {
-                            <option value="@group.getGid()">@group.getName()</option>
+                            <option value="@group.getName()">@group.getName()</option>
                         }
                     }
                 </select>

@@ -31,6 +31,14 @@ public class UserControl extends Controller {
         return ok(userform.render(user, filledForm, groups));
     }
 
+    public static Result editUser() {
+        List<Group> groups = Group.find.all();
+        User user = User.findByUsername(session("connected"));
+        Form<User> filledForm = userForm.fill(user);
+        return ok(userform.render(user, filledForm, groups));
+    }
+
+
     public static Result submit() {
         Form<User> filledForm = userForm.bindFromRequest();
         List<Group> groups = Group.find.all();
@@ -50,6 +58,8 @@ public class UserControl extends Controller {
         newUser.name = filledForm.field("name").value();
         newUser.username = filledForm.field("username").value();
         newUser.password = filledForm.field("password").value();
+        Group g = Group.findByName(filledForm.field("group.name").value());
+        newUser.setGroup(g);
         newUser.passwordConfirmation = filledForm.field("passwordConfirmation").value();
         hasErrors = newUser.validate();
         if (!newUser.password.equals(newUser.passwordConfirmation)) {
