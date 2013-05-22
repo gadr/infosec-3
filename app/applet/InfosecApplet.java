@@ -52,23 +52,26 @@ public class InfosecApplet extends Applet {
     }
 
     public static String getIndex(byte[] privateKeyContent, byte[] publicKeyContent,
-                                  byte[] envelopeContent, byte[] signatureContent, byte[] encryptedContent)
-            throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException,
-            IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException, SignatureException {
+                                  byte[] envelopeContent, byte[] signatureContent, byte[] encryptedContent) {
 
-        DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
-        PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
+        try {
+            DigitalSignatureChecker digitalSignatureChecker = new DigitalSignatureChecker();
+            PrivateKeyChecker privateKeyChecker = new PrivateKeyChecker();
 
-        PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyContent);
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyContent);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-        byte[] seed = EnvelopeChecker.getSeedFromEnvelope(envelopeContent, privateKey);
-        Key key = EnvelopeChecker.getKeyFromSeed(seed);
-        byte[] content = privateKeyChecker.decryptPKCS5(encryptedContent, key);
+            PublicKey publicKey = digitalSignatureChecker.readPublicKey(publicKeyContent);
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyContent);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+            byte[] seed = EnvelopeChecker.getSeedFromEnvelope(envelopeContent, privateKey);
+            Key key = EnvelopeChecker.getKeyFromSeed(seed);
+            byte[] content = privateKeyChecker.decryptPKCS5(encryptedContent, key);
 
-        boolean result = digitalSignatureChecker.verifySignature(publicKey, signatureContent, content);
-
-        return result? "true" : "false";
+            boolean result = digitalSignatureChecker.verifySignature(publicKey, signatureContent, content);
+            return result? new String(content, "UTF-8") : "NOT OK";
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!");
+        }
+        return "Error!";
     }
 }
