@@ -53,8 +53,6 @@ public class Application extends Controller {
             if (result.isBlocked()) {
                 return forbidden("BLOCKED");
             }
-            result.addAccessNumber();
-            result.save();
             session("connected", result.getUsername());
             return ok();
         }
@@ -133,6 +131,8 @@ public class Application extends Controller {
         }
 
         if (isVerified) {
+            user.addAccessNumber();
+            user.save();
             session("signature", "OK");
             return ok("OK");
         }
