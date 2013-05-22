@@ -2,16 +2,14 @@ package utils;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class KeyPairGenerator {
@@ -20,7 +18,10 @@ public class KeyPairGenerator {
         String privateKeyPath = "test/" + username + ".priv";
         String publicKeyPath = "test/" + username + ".pub";
 
-        byte[] password64Bits = Arrays.copyOf(password.getBytes(), 8); // use only first 64 bits
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        random.setSeed(password.getBytes());
+        KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+        keyGen.init(56, random);
 
         // Generate key pair
         java.security.KeyPairGenerator keyPairGenerator = java.security.KeyPairGenerator.getInstance("RSA");
@@ -32,9 +33,8 @@ public class KeyPairGenerator {
         byte[] encodedPublicKey = keyPair.getPublic().getEncoded();
 
         // Encodes private key with PKCS5 using the password
-        SecretKeySpec keySpec = new SecretKeySpec(password64Bits, "DES");
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        cipher.init(Cipher.ENCRYPT_MODE, keyGen.generateKey());
         byte[] pkcs5EncryptedKey = cipher.doFinal(encodedPrivateKey);
 
         // Write both keys to the file system
