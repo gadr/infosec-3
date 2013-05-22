@@ -106,7 +106,7 @@ public class Log extends Model {
     }
 
     public String getMessageString() {
-        return message.getMessage().replaceAll("<login_name>", username).replaceAll("<arq_name>", filename);
+        return message != null ? message.getMessage().replaceAll("<login_name>", username).replaceAll("<arq_name>", filename) : "";
     }
 
     @Override
