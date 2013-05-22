@@ -96,8 +96,8 @@ public class Application extends Controller {
                     String hashed = User.generatePassword(candidate, salt);
                     if (hashed.equals(password)) {
                         session("password", "OK");
-                        Log.log("3002", user.getUsername());
                         Log.log("3003", user.getUsername());
+                        Log.log("3002", user.getUsername());
                         return ok("OK");
                     }
                 }
