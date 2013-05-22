@@ -39,6 +39,12 @@ public class Global extends GlobalSettings {
 
         User u = new User();
         u.setName("Administrador Maneiro");
+        u.generateSalt();
+        try {
+            u.createPassword("MAFEVE");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         u.setGroup(g);
         u.setUsername("admin");
 

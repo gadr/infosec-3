@@ -3,9 +3,6 @@ package controllers;
 import models.Group;
 import models.User;
 import org.apache.commons.io.FileUtils;
-import play.api.data.validation.ValidationError;
-import play.api.templates.Html;
-import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -16,9 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.logging.Logger;
-
-import static java.util.logging.Logger.*;
 
 public class UserControl extends Controller {
 
@@ -87,7 +81,7 @@ public class UserControl extends Controller {
         } else {
             newUser.generateSalt();
             try {
-                newUser.generatePassword(newUser.password);
+                newUser.createPassword(newUser.password);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }

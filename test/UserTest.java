@@ -33,7 +33,7 @@ public class UserTest extends BaseModelTest{
         user.setGroup(Group.findByName(groupname));
         user.setUsername(username);
         try {
-            user.generatePassword(password);
+            user.createPassword(password);
         } catch (NoSuchAlgorithmException e) {
         }
         user.save();
@@ -54,10 +54,10 @@ public class UserTest extends BaseModelTest{
         try {
             // Test
             user.generateSalt();
-            String generatedPassword = user.generatePassword(password);
-            String secGeneratedPassword = user.generatePassword(password);
+            String generatedPassword = user.createPassword(password);
+            String secGeneratedPassword = user.createPassword(password);
             user.generateSalt();
-            String diffGeneratedPassword = user.generatePassword(password);
+            String diffGeneratedPassword = user.createPassword(password);
 
             // Assert
             //System.out.println(generatedPassword);

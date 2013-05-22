@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -64,11 +65,30 @@ public class Application extends Controller {
         }
     }
 
-    public static Result checkPassword() {
-        String[] phonemes = request().body().asFormUrlEncoded().get("phonemes");
-        System.out.println("Phonemes: " + Arrays.toString(phonemes));
-        session("password", "OK");
-        return ok("OK");
+    public static Result checkPassword() throws NoSuchAlgorithmException {
+        String[] phonemesString = request().body().asFormUrlEncoded().get("phonemes[]");
+        String[][] phonemesParsed = new String[3][4];
+        for (int i = 0; i < 3; i++) {
+            phonemesParsed[i] = phonemesString[i].split("-");
+        }
+        System.out.println("Phonemes: " + Arrays.toString(phonemesString));
+        System.out.println("Phonemes Parsed: " + Arrays.toString(phonemesParsed[0]) + " " + Arrays.toString(phonemesParsed[1]) + " " + Arrays.toString(phonemesParsed[2]));
+        User user = User.findByUsername(session("connected"));
+        String password = user.getPassword();
+        String salt = user.getSalt();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 4; k++) {
+                    String candidate = phonemesParsed[0][i] + phonemesParsed[1][j] + phonemesParsed[2][k];
+                    String hashed = User.generatePassword(candidate, salt);
+                    if (hashed.equals(password)) {
+                        session("password", "OK");
+                        return ok("OK");
+                    }
+                }
+            }
+        }
+        return unauthorized("WRONG");
     }
 
     public static Result generateRandom512Bytes() throws IOException {
